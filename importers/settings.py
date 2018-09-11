@@ -1,0 +1,26 @@
+import os
+
+ES_HOST = os.getenv("ES_HOST", "localhost")
+ES_PORT = os.getenv("ES_PORT", 9200)
+
+# For platsannonser
+ES_ANNONS_INDEX = os.getenv('ES_ANNONS_INDEX', 'platsannons')
+
+# For postgres (platsannonser and auranest)
+PG_HOST = os.getenv("PG_HOST")
+PG_PORT = os.getenv("PG_PORT", 5432)
+PG_DBNAME = os.getenv("PG_DBNAME")
+PG_USER = os.getenv("PG_USER")
+PG_PASSWORD = os.getenv("PG_PASSWORD")
+PG_BATCH_SIZE = os.getenv("PG_BATCH_SIZE", 2000)
+
+# For kandidat import
+ES_KANDIDAT_INDEX = os.getenv('ES_KANDIDAT_INDEX', 'kandidater')
+ORACLE_USER = os.getenv('ORACLE_USER')
+ORACLE_PASSWORD = os.getenv('ORACLE_PASSWORD')
+ORACLE_PORT = os.getenv('ORACLE_PORT', '1521')
+ORACLE_HOST = os.getenv('ORACLE_HOST')
+ORACLE_SERVICE = os.getenv('ORACLE_SERVICE')
+
+# For auranest import
+ES_AURANEST_INDEX = os.getenv('ES_AURANEST_INDEX', 'auranest')

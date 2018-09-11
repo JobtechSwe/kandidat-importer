@@ -1,0 +1,7 @@
+elasticsearch
+psycopg2-binary
+cx_Oracle
+zeep
+pytest
+pytest-runner
+
