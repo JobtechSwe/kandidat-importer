@@ -37,7 +37,7 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
 def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions):
     regions = {
         field['NationalNUTSLevel3Code']: OrderedDict(
-            [('id', str(field['NationalNUTel3Code'])),
+            [('id', str(field['NationalNUTSLevel3Code'])),
              ('type', settings.taxonomy_type['lanskod']),
              ('label', field['Term']), ('num_id',
                                         int(field['NationalNUTSLevel3Code']))])
