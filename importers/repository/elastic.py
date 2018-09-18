@@ -2,7 +2,14 @@ from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
 from importers import settings
 
-es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT}])
+if settings.ES_USER and settings.ES_PWD:
+    es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT,
+                         'use_ssl': True, 'sniff_on_start': True,
+                         'sniff_on_connection_fail': True, 'sniffer_timeout': 60,
+                         'http_auth': "%s:%s" % (settings.ES_USER,
+                                                 settings.ES_PWD)}])
+else:
+    es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT}])
 
 
 def _bulk_generator(documents, indexname, idkey, doctype='document'):
@@ -36,7 +43,7 @@ def get_last_timestamp(indexname):
 
 
 def get_ids_with_timestamp(ts, indexname):
-    # Possible failure if there are more than "size" number of documents with the same timestamp
+    # Possible failure if there are more than "size" documents with the same timestamp
     max_size = 1000
     response = es.search(index=indexname,
                          body={

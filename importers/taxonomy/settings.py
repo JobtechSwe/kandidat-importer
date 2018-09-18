@@ -1,7 +1,8 @@
-from importers.settings import *
+import os
 
 # Taxonomyservice settings
-TAXONOMY_SERVICE_URL = os.getenv("TAXONOMY_SERVICE_URL", "http://wstaxonomiservice.ams.se/TaxonomiService.asmx")
+TAXONOMY_SERVICE_URL = os.getenv("TAXONOMY_SERVICE_URL",
+                                 "http://wstaxonomiservice.ams.se/TaxonomiService.asmx")
 LANGUAGE_CODE_SE = 502
 COUNTRY_CODE_SE = 199
 
@@ -30,5 +31,3 @@ taxonomy_type = {
     REGION: 'region_code',
     WORKTIME_EXTENT: 'worktime_extent'
 }
-
-
