@@ -168,7 +168,7 @@ def update_search_engine_valuestore(indexname, indexexist, values):
         raise
 
 
-def reload_taxonomy():
+def start():
     (indexname, indexexist) = check_if_taxonomyversion_already_exists()
     log.info("indexname: %s, indexexist: %s" % (indexname, indexexist))
     values = fetch_full_taxonomy()
@@ -177,4 +177,4 @@ def reload_taxonomy():
 
 
 if __name__ == '__main__':
-    reload_taxonomy()
+    start()
