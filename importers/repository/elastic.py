@@ -75,6 +75,7 @@ def put_alias(indexlist, aliasname):
 
 
 def create_index(indexname):
+    # Creates an index with default mappings, ignoring if it already exists
     es.indices.create(index=indexname, body={
             "mappings": {
                 "document": {
@@ -85,7 +86,7 @@ def create_index(indexname):
                     }
                 }
             }
-        })
+        }, ignore=400)
 
 
 def add_indices_to_alias(indexlist, aliasname):

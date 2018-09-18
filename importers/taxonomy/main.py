@@ -142,8 +142,14 @@ def check_if_taxonomyversion_already_exists():
 
 
 def update_search_engine_valuestore(indexname, indexexist, values):
-    if not indexexist:
+    try:
         elastic.create_index(indexname)
+        elastic.bulk_index(values, indexname, ['type', 'id'])
+    except Exception as e:
+        log.error('Failed to load values into search engine', e)
+        raise
+
+    if not indexexist:
         try:
             if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
                 alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
@@ -161,18 +167,10 @@ def update_search_engine_valuestore(indexname, indexexist, values):
             log.error('Failed to update aliases', e)
             raise
 
-    try:
-        elastic.bulk_index(values, indexname, ['type', 'id'])
-    except Exception as e:
-        log.error('Failed to load values into search engine', e)
-        raise
-
 
 def start():
     (indexname, indexexist) = check_if_taxonomyversion_already_exists()
-    log.info("indexname: %s, indexexist: %s" % (indexname, indexexist))
     values = fetch_full_taxonomy()
-    log.info("values", values)
     update_search_engine_valuestore(indexname, indexexist, values)
 
 
