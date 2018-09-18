@@ -14,7 +14,7 @@ setup(
         'console_scripts': [
             'import-platsannonser = importers.platsannons.main:start',
             'import-kandidater = importers.kandidat.main:start',
-            'reload-taxonomy = importers.taxonomy.main:reload_taxonomy',
+            'import-taxonomy = importers.taxonomy.main:start',
         ],
     },
     # setup_requires=["pytest-runner"],
