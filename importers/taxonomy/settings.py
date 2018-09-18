@@ -20,6 +20,7 @@ LANGUAGE = 'sprak'
 MUNICIPALITY = 'kommunkod'
 REGION = 'lanskod'
 WORKTIME_EXTENT = 'arbetstidsomfattning'
+EDUCATION_LEVEL = 'utbildningsniva'
 
 taxonomy_type = {
     OCCUPATION: 'jobterm',
@@ -29,5 +30,6 @@ taxonomy_type = {
     LANGUAGE: 'language',
     MUNICIPALITY: 'municipality_code',
     REGION: 'region_code',
-    WORKTIME_EXTENT: 'worktime_extent'
+    WORKTIME_EXTENT: 'worktime_extent',
+    EDUCATION_LEVEL: 'education_level',
 }

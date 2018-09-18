@@ -3,6 +3,8 @@ from importers.taxonomy import settings, taxonomy
 from collections import OrderedDict
 from importers.repository import elastic
 
+logging.basicConfig()
+logging.getLogger(__name__).setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -99,8 +101,8 @@ def fetch_full_taxonomy():
         taxonomy_languages = taxonomy.get_all_languages()
         taxonomy_work_time_extent = taxonomy.get_all_work_time_extent()
         taxonomy_skills = taxonomy.get_all_skills()
-    except:
-        log.error('Failed to fetch valuesets from Taxonomy Service')
+    except Exception as e:
+        log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
     (valuestore_jobterm,
      valuestore_jobgroup, valuestore_jobfield) = create_valuestore_jobs(
@@ -123,8 +125,8 @@ def fetch_full_taxonomy():
 def check_if_taxonomyversion_already_exists():
     try:
         tax_versions = taxonomy.get_taxonomy_version()
-    except:
-        log.error('Failed to get taxonomy version from taxonomy service')
+    except Exception as e:
+        log.error('Failed to get taxonomy version from taxonomy service', e)
         raise
     highest_version = max([v['BastaxonomiId'] for v in tax_versions])
     expected_index_name = settings.ES_TAX_INDEX_BASE + str(highest_version)
@@ -133,19 +135,15 @@ def check_if_taxonomyversion_already_exists():
             expected_index_name))
     try:
         index_exists = elastic.index_exists(expected_index_name)
-    except:
-        log.error('Failed to check index existence on elastic')
+    except Exception as e:
+        log.error('Failed to check index existence on elastic', e)
         raise
     return (expected_index_name, index_exists)
 
 
 def update_search_engine_valuestore(indexname, indexexist, values):
-    try:
-        elastic.bulk_index(values, indexname, ['type', 'id'])
-    except:
-        log.error('Failed to load values into search engine')
-        raise
     if not indexexist:
+        elastic.create_index(indexname)
         try:
             if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
                 alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
@@ -159,14 +157,22 @@ def update_search_engine_valuestore(indexname, indexexist, values):
                                          settings.ES_TAX_INDEX_ALIAS)
             else:
                 elastic.put_alias([indexname], settings.ES_TAX_INDEX_ALIAS)
-        except:
-            log.error('Failed to update aliases')
+        except Exception as e:
+            log.error('Failed to update aliases', e)
             raise
+
+    try:
+        elastic.bulk_index(values, indexname, ['type', 'id'])
+    except Exception as e:
+        log.error('Failed to load values into search engine', e)
+        raise
 
 
 def reload_taxonomy():
     (indexname, indexexist) = check_if_taxonomyversion_already_exists()
+    log.info("indexname: %s, indexexist: %s" % (indexname, indexexist))
     values = fetch_full_taxonomy()
+    log.info("values", values)
     update_search_engine_valuestore(indexname, indexexist, values)
 
 
