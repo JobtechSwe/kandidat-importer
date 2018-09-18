@@ -24,7 +24,7 @@ def query(sql, args):
 
 def read_from_pg_since(last_ids, timestamp, tablename, converter = None):
     cur = pg_conn.cursor()
-    cur.execute("SELECT id, ts, doc FROM " + tablename + " "
+    cur.execute("SELECT id, timestamp, doc FROM " + tablename + " "
                 "WHERE ts >= %s ORDER BY ts LIMIT %s",
                 [timestamp, settings.PG_BATCH_SIZE])
     rows = cur.fetchall()
