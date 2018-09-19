@@ -1,13 +1,16 @@
+import certifi
+from ssl import create_default_context
 from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
 from importers import settings
 
 if settings.ES_USER and settings.ES_PWD:
-    es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT,
-                         'use_ssl': True, 'sniff_on_start': True,
-                         'sniff_on_connection_fail': True, 'sniffer_timeout': 60,
-                         'http_auth': "%s:%s" % (settings.ES_USER,
-                                                 settings.ES_PWD)}])
+    context = create_default_context(cafile=certifi.where())
+    es = Elasticsearch([settings.ES_HOST], port=settings.ES_PORT,
+                       use_ssl=True, scheme='https', sniff_on_start=False,
+                       sniff_on_connection_fail=True, sniffer_timeout=60,
+                       ssl_context=context,
+                       http_auth=(settings.ES_USER, settings.ES_PWD))
 else:
     es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT}])
 
