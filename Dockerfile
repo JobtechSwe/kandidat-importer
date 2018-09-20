@@ -21,3 +21,4 @@ RUN python3 setup.py install
 WORKDIR /
 RUN rm -fr /app
 
+USER 10000
