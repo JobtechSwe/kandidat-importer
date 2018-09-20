@@ -1,7 +1,9 @@
+import json
 from importers.repository import taxonomy
 
 
-def convert_message(message_envelope):
+def convert_message(msg):
+    message_envelope = json.loads(msg) if isinstance(msg, str) else msg
     if 'annons' in message_envelope and 'version' in message_envelope:
         message = message_envelope['annons']
         annons = dict()
@@ -81,41 +83,41 @@ def convert_message(message_envelope):
         }
         annons['krav'] = {
             'kompetenser': [
-                {'kod': kompetens['varde'],
-                 'term': taxonomy.get_term('kompetens', kompetens['varde']),
-                 'vikt': kompetens['vikt']
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
                  }
                 for kompetens in
                 message.get('kompetenser', []) if kompetens.get('vikt', 0) > 3
             ],
             'sprak': [
-                {'kod': sprak['varde'],
-                 'term': taxonomy.get_term('sprak', sprak['varde']),
-                 'vikt': sprak['vikt']
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
                  }
                 for sprak in message.get('sprak', []) if sprak.get('vikt', 0) > 3
             ],
             'utbildningsniva': [
-                {'kod': utbn['varde'],
-                 'term': taxonomy.get_term('utbildningsniva', utbn['varde']),
-                 'vikt': utbn['vikt']
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn.get('varde')),
+                 'vikt': utbn.get('vikt')
                  }
                 for utbn in
                 [message.get('utbildningsniva', {})] if utbn.get('vikt', 0) > 3
 
             ],
             'utbildningsinriktning': [
-                {'kod': utbi['varde'],
-                 'term': taxonomy.get_term('utbildningsinriktning', utbi['varde']),
-                 'vikt': utbi['vikt']
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
                  }
                 for utbi in
                 [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) > 3
             ],
             'yrkeserfarenheter': [
-                {'kod': yrkerf['varde'],
-                 'term': taxonomy.get_term('yrkesroll', yrkerf['varde']),
-                 'vikt': yrkerf['vikt']
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) > 3
@@ -123,41 +125,40 @@ def convert_message(message_envelope):
         }
         annons['meriterande'] = {
             'kompetenser': [
-                {'kod': kompetens['varde'],
-                 'term': taxonomy.get_term('kompetens', kompetens['varde']),
-                 'vikt': kompetens['vikt']
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
                  }
                 for kompetens in
                 message.get('kompetenser', []) if kompetens.get('vikt', 0) < 4
             ],
             'sprak': [
-                {'kod': sprak['varde'],
-                 'term': taxonomy.get_term('sprak', sprak['varde']),
-                 'vikt': sprak['vikt']
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
                  }
                 for sprak in message.get('sprak', []) if sprak.get('vikt', 0) < 4
             ],
             'utbildningsniva': [
-                {'kod': utbn['varde'],
-                 'term': taxonomy.get_term('utbildningsniva', utbn['varde']),
-                 'vikt': utbn['vikt']
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn('varde')),
+                 'vikt': utbn('vikt')
                  }
                 for utbn in
-                [message.get('utbildningsniva', {})] if utbn.get('vikt', 0) < 4
-
+                [message.get('utbildningsniva', {})] if utbn and utbn.get('vikt', 0) < 4
             ],
             'utbildningsinriktning': [
-                {'kod': utbi['varde'],
-                 'term': taxonomy.get_term('utbildningsinriktning', utbi['varde']),
-                 'vikt': utbi['vikt']
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
                  }
                 for utbi in
                 [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) < 4
             ],
             'yrkeserfarenheter': [
-                {'kod': yrkerf['varde'],
-                 'term': taxonomy.get_term('yrkesroll', yrkerf['varde']),
-                 'vikt': yrkerf['vikt']
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) < 4
