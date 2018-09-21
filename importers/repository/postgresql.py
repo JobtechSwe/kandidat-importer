@@ -1,7 +1,6 @@
+import sys
 import psycopg2
 from importers import settings
-# from importers.platsannons import converter
-import sys
 
 if not settings.PG_DBNAME or not settings.PG_USER:
     print("You must set environment variables PG_DBNAME and PG_USER.")
@@ -22,10 +21,10 @@ def query(sql, args):
     return rows
 
 
-def read_from_pg_since(last_ids, timestamp, tablename, converter = None):
+def read_from_pg_since(last_ids, timestamp, tablename, converter=None):
     cur = pg_conn.cursor()
-    cur.execute("SELECT id, timestamp, doc FROM " + tablename + " "
-                "WHERE ts >= %s ORDER BY ts LIMIT %s",
+    cur.execute("SELECT id, timestamp, doc FROM " + tablename +
+                " WHERE timestamp >= %s ORDER BY timestamp ASC LIMIT %s",
                 [timestamp, settings.PG_BATCH_SIZE])
     rows = cur.fetchall()
     # Create a list of dictionaries from row[2] adding to it the id and

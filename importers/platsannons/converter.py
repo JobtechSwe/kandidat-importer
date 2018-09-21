@@ -1,23 +1,41 @@
+import json
+import logging
+from dateutil import parser
 from importers.repository import taxonomy
 
+logging.basicConfig()
+logging.getLogger(__name__).setLevel(logging.INFO)
 
-def convert_message(message_envelope):
+log = logging.getLogger(__name__)
+
+
+def _isodate(bad_date):
+    try:
+        date = parser.parse(bad_date)
+        return date.isoformat()
+    except ValueError as e:
+        log.error('Failed to parse %s as a valid date' % bad_date, e)
+        return None
+
+
+def convert_message(msg):
+    message_envelope = json.loads(msg) if isinstance(msg, str) else msg
     if 'annons' in message_envelope and 'version' in message_envelope:
         message = message_envelope['annons']
         annons = dict()
         annons['id'] = message.get('annonsId')
         annons['rubrik'] = message.get('annonsrubrik')
-        annons['sista_ansokningsdatum'] = message.get('sistaAnsokningsdatum')
+        annons['sista_ansokningsdatum'] = _isodate(message.get('sistaAnsokningsdatum'))
         annons['antal_platser'] = message.get('antalPlatser')
         annons['beskrivning'] = {
             'information': message.get('ftgInfo'),
             'behov': message.get('beskrivningBehov'),
             'krav': message.get('beskrivningKrav'),
             'villkor': message.get('villkorsbeskrivning'),
-            'annonstext': "%s\n%s\n%s\n%s" % (message.get('ftgInfo'),
-                                              message.get('beskrivningBehov'),
-                                              message.get('beskrivningKrav'),
-                                              message.get('villkorsbeskrivning'))
+            'annonstext': "%s\n%s\n%s\n%s" % (message.get('ftgInfo', ''),
+                                              message.get('beskrivningBehov', ''),
+                                              message.get('beskrivningKrav', ''),
+                                              message.get('villkorsbeskrivning', ''))
         }
         annons['arbetsplats_id'] = message.get('arbetsplatsId')
         annons['anstallningstyp'] = _expand_taxonomy_value('anstallningstyp',
@@ -81,41 +99,41 @@ def convert_message(message_envelope):
         }
         annons['krav'] = {
             'kompetenser': [
-                {'kod': kompetens['varde'],
-                 'term': taxonomy.get_term('kompetens', kompetens['varde']),
-                 'vikt': kompetens['vikt']
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
                  }
                 for kompetens in
                 message.get('kompetenser', []) if kompetens.get('vikt', 0) > 3
             ],
             'sprak': [
-                {'kod': sprak['varde'],
-                 'term': taxonomy.get_term('sprak', sprak['varde']),
-                 'vikt': sprak['vikt']
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
                  }
                 for sprak in message.get('sprak', []) if sprak.get('vikt', 0) > 3
             ],
             'utbildningsniva': [
-                {'kod': utbn['varde'],
-                 'term': taxonomy.get_term('utbildningsniva', utbn['varde']),
-                 'vikt': utbn['vikt']
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn.get('varde')),
+                 'vikt': utbn.get('vikt')
                  }
                 for utbn in
                 [message.get('utbildningsniva', {})] if utbn.get('vikt', 0) > 3
 
             ],
             'utbildningsinriktning': [
-                {'kod': utbi['varde'],
-                 'term': taxonomy.get_term('utbildningsinriktning', utbi['varde']),
-                 'vikt': utbi['vikt']
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
                  }
                 for utbi in
                 [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) > 3
             ],
             'yrkeserfarenheter': [
-                {'kod': yrkerf['varde'],
-                 'term': taxonomy.get_term('yrkesroll', yrkerf['varde']),
-                 'vikt': yrkerf['vikt']
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) > 3
@@ -123,47 +141,46 @@ def convert_message(message_envelope):
         }
         annons['meriterande'] = {
             'kompetenser': [
-                {'kod': kompetens['varde'],
-                 'term': taxonomy.get_term('kompetens', kompetens['varde']),
-                 'vikt': kompetens['vikt']
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
                  }
                 for kompetens in
                 message.get('kompetenser', []) if kompetens.get('vikt', 0) < 4
             ],
             'sprak': [
-                {'kod': sprak['varde'],
-                 'term': taxonomy.get_term('sprak', sprak['varde']),
-                 'vikt': sprak['vikt']
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
                  }
                 for sprak in message.get('sprak', []) if sprak.get('vikt', 0) < 4
             ],
             'utbildningsniva': [
-                {'kod': utbn['varde'],
-                 'term': taxonomy.get_term('utbildningsniva', utbn['varde']),
-                 'vikt': utbn['vikt']
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn('varde')),
+                 'vikt': utbn('vikt')
                  }
                 for utbn in
-                [message.get('utbildningsniva', {})] if utbn.get('vikt', 0) < 4
-
+                [message.get('utbildningsniva', {})] if utbn and utbn.get('vikt', 0) < 4
             ],
             'utbildningsinriktning': [
-                {'kod': utbi['varde'],
-                 'term': taxonomy.get_term('utbildningsinriktning', utbi['varde']),
-                 'vikt': utbi['vikt']
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
                  }
                 for utbi in
                 [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) < 4
             ],
             'yrkeserfarenheter': [
-                {'kod': yrkerf['varde'],
-                 'term': taxonomy.get_term('yrkesroll', yrkerf['varde']),
-                 'vikt': yrkerf['vikt']
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) < 4
             ],
         }
-        annons['publiceringsdatum'] = message.get('publiceringsdatum')
+        annons['publiceringsdatum'] = _isodate(message.get('publiceringsdatum'))
         annons['kalla'] = message.get('kalla')
         annons['publiceringskanaler'] = {
             'platsbanken': message.get('publiceringskanalPlatsbanken', False),
@@ -172,10 +189,10 @@ def convert_message(message_envelope):
         }
         annons['status'] = {
             'publicerad': (message.get('publicerad') == 'PUBLICERAD'),
-            'sista_publiceringsdatum': message.get('sistaPubliceringsdatum'),
-            'skapad': message.get('skapadTid'),
+            'sista_publiceringsdatum': _isodate(message.get('sistaPubliceringsdatum')),
+            'skapad': _isodate(message.get('skapadTid')),
             'skapad_av': message.get('skapadAv'),
-            'uppdaterad': message.get('uppdateradTid'),
+            'uppdaterad': _isodate(message.get('uppdateradTid')),
             'uppdaterad_av': message.get('uppdateradAv'),
             'anvandarId': message.get('anvandarId'),
         }

@@ -7,9 +7,7 @@ from importers import settings
 if settings.ES_USER and settings.ES_PWD:
     context = create_default_context(cafile=certifi.where())
     es = Elasticsearch([settings.ES_HOST], port=settings.ES_PORT,
-                       use_ssl=True, scheme='https', sniff_on_start=False,
-                       sniff_on_connection_fail=True, sniffer_timeout=60,
-                       ssl_context=context,
+                       use_ssl=True, scheme='https', ssl_context=context,
                        http_auth=(settings.ES_USER, settings.ES_PWD))
 else:
     es = Elasticsearch([{'host': settings.ES_HOST, 'port': settings.ES_PORT}])
@@ -77,19 +75,31 @@ def put_alias(indexlist, aliasname):
     return es.indices.put_alias(index=indexlist, name=aliasname)
 
 
-def create_index(indexname):
-    # Creates an index with default mappings, ignoring if it already exists
-    es.indices.create(index=indexname, body={
-            "mappings": {
-                "document": {
-                    "properties": {
-                        "timestamp": {
-                            "type": "long"
-                        }
-                    }
+def create_index(indexname, extra_mappings=None):
+    basic_body = {
+        "mappings": {
+            "document": {
+                "properties": {
+                    "timestamp": {
+                        "type": "long"
+                    },
                 }
             }
-        }, ignore=400)
+        }
+    }
+
+    if extra_mappings:
+        body = extra_mappings
+        if 'mappings' in body:
+            body.get('mappings', {}) \
+                .get('document', {}).get('properties', {})['timestamp'] = {'type': 'long'}
+        else:
+            body.update(basic_body)
+    else:
+        body = basic_body
+
+    # Creates an index with mappings, ignoring if it already exists
+    es.indices.create(index=indexname, body=body, ignore=400)
 
 
 def add_indices_to_alias(indexlist, aliasname):
