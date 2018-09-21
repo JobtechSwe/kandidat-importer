@@ -1,6 +1,12 @@
+import time
+import logging
 from importers.repository import elastic, postgresql
 from importers import settings
-import time
+
+logging.basicConfig()
+logging.getLogger(__name__).setLevel(logging.INFO)
+
+log = logging.getLogger(__name__)
 
 
 def start():
@@ -19,6 +25,7 @@ def start():
                                           last_timestamp, 'auranest')
         doc_counter += len(annonser)
         if annonser:
+            log.info("Indexed %d docs so far." % doc_counter)
             elastic.bulk_index(annonser, settings.ES_AURANEST_INDEX)
         else:
             break
