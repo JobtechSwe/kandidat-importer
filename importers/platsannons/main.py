@@ -17,7 +17,9 @@ def start():
         elastic.create_index(settings.ES_ANNONS_INDEX, settings.platsannons_mappings)
     last_timestamp = elastic.get_last_timestamp(settings.ES_ANNONS_INDEX)
     log.info("Last timestamp: %d (%s)" % (last_timestamp,
-                                          datetime.fromtimestamp(last_timestamp)))
+                                          datetime.fromtimestamp(
+                                              (last_timestamp+1)/1000)
+                                          ))
     last_identifiers = elastic.get_ids_with_timestamp(last_timestamp,
                                                       settings.ES_ANNONS_INDEX)
     doc_counter = 0
