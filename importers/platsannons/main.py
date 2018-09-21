@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 def start():
     start_time = time.time()
     if not elastic.index_exists(settings.ES_ANNONS_INDEX):
-        elastic.create_index(settings.ES_ANNONS_INDEX)
+        elastic.create_index(settings.ES_ANNONS_INDEX, settings.platsannons_mappings)
     last_timestamp = elastic.get_last_timestamp(settings.ES_ANNONS_INDEX)
     log.info("Last timestamp: %d (%s)" % (last_timestamp,
                                           datetime.fromtimestamp(last_timestamp)))

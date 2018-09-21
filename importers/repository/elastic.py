@@ -75,19 +75,31 @@ def put_alias(indexlist, aliasname):
     return es.indices.put_alias(index=indexlist, name=aliasname)
 
 
-def create_index(indexname):
-    # Creates an index with default mappings, ignoring if it already exists
-    es.indices.create(index=indexname, body={
-            "mappings": {
-                "document": {
-                    "properties": {
-                        "timestamp": {
-                            "type": "long"
-                        }
-                    }
+def create_index(indexname, extra_mappings=None):
+    basic_body = {
+        "mappings": {
+            "document": {
+                "properties": {
+                    "timestamp": {
+                        "type": "long"
+                    },
                 }
             }
-        }, ignore=400)
+        }
+    }
+
+    if extra_mappings:
+        body = extra_mappings
+        if 'mappings' in body:
+            body.get('mappings', {}) \
+                .get('document', {}).get('properties', {})['timestamp'] = {'type': 'long'}
+        else:
+            body.update(basic_body)
+    else:
+        body = basic_body
+
+    # Creates an index with mappings, ignoring if it already exists
+    es.indices.create(index=indexname, body=body, ignore=400)
 
 
 def add_indices_to_alias(indexlist, aliasname):
