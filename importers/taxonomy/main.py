@@ -91,6 +91,10 @@ def create_valuestore_languages(taxonomy_languages):
     return (languages)
 
 
+def create_valuestore_countries(taxonomy_counries):
+    pass
+
+
 def fetch_full_taxonomy():
     try:
         taxonomy_jobfields = taxonomy.get_all_job_fields()

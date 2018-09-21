@@ -2,7 +2,7 @@ import os
 
 # Taxonomyservice settings
 TAXONOMY_SERVICE_URL = os.getenv("TAXONOMY_SERVICE_URL",
-                                 "http://wstaxonomiservice.ams.se/TaxonomiService.asmx")
+                                 "http://api.arbetsformedlingen.se/taxonomi/v0/TaxonomiService.asmx")
 LANGUAGE_CODE_SE = 502
 COUNTRY_CODE_SE = 199
 
