@@ -19,6 +19,7 @@ SKILL = 'kompetens'
 LANGUAGE = 'sprak'
 MUNICIPALITY = 'kommunkod'
 REGION = 'lanskod'
+COUNTRY = 'landkod'
 WORKTIME_EXTENT = 'arbetstidsomfattning'
 EDUCATION_LEVEL = 'utbildningsniva'
 
@@ -32,4 +33,5 @@ taxonomy_type = {
     REGION: 'region_code',
     WORKTIME_EXTENT: 'worktime_extent',
     EDUCATION_LEVEL: 'education_level',
+    COUNTRY: 'country_code'
 }
