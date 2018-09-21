@@ -77,7 +77,7 @@ def convert_message(msg):
         if 'yrkesroll' in message:
             yrkesroll = taxonomy.get_entity('yrkesroll',
                                             message.get('yrkesroll', {}).get('varde'))
-            if yrkesroll:
+            if yrkesroll and 'parent' in yrkesroll:
                 yrkesgrupp = yrkesroll.pop('parent')
                 yrkesomrade = yrkesgrupp.pop('parent')
 
@@ -87,6 +87,8 @@ def convert_message(msg):
                                         'term': yrkesgrupp['label']}
                 annons['yrkesomrade'] = {'kod': yrkesomrade['id'],
                                          'term': yrkesomrade['label']}
+            else:
+                log.error('Incomplete taxonomy tree for "yrkesroll" (%s)' % yrkesroll)
         arbplatsmessage = message.get('arbetsplatsadress', {})
         annons['arbetsplatsadress'] = {
             'kommun': arbplatsmessage.get('kommun', {}).get('varde'),
