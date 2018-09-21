@@ -2,6 +2,6 @@ elasticsearch
 psycopg2-binary
 cx_Oracle
 zeep
+python-dateutil
 pytest
 pytest-runner
-

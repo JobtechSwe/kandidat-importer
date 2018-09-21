@@ -1,5 +1,21 @@
 import json
+import logging
+from dateutil import parser
 from importers.repository import taxonomy
+
+logging.basicConfig()
+logging.getLogger(__name__).setLevel(logging.INFO)
+
+log = logging.getLogger(__name__)
+
+
+def _isodate(bad_date):
+    try:
+        date = parser.parse(bad_date)
+        return date.isoformat()
+    except ValueError as e:
+        log.error('Failed to parse %s as a valid date' % bad_date, e)
+        return None
 
 
 def convert_message(msg):
@@ -9,7 +25,7 @@ def convert_message(msg):
         annons = dict()
         annons['id'] = message.get('annonsId')
         annons['rubrik'] = message.get('annonsrubrik')
-        annons['sista_ansokningsdatum'] = message.get('sistaAnsokningsdatum')
+        annons['sista_ansokningsdatum'] = _isodate(message.get('sistaAnsokningsdatum'))
         annons['antal_platser'] = message.get('antalPlatser')
         annons['beskrivning'] = {
             'information': message.get('ftgInfo'),
@@ -164,7 +180,7 @@ def convert_message(msg):
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) < 4
             ],
         }
-        annons['publiceringsdatum'] = message.get('publiceringsdatum')
+        annons['publiceringsdatum'] = _isodate(message.get('publiceringsdatum'))
         annons['kalla'] = message.get('kalla')
         annons['publiceringskanaler'] = {
             'platsbanken': message.get('publiceringskanalPlatsbanken', False),
@@ -173,10 +189,10 @@ def convert_message(msg):
         }
         annons['status'] = {
             'publicerad': (message.get('publicerad') == 'PUBLICERAD'),
-            'sista_publiceringsdatum': message.get('sistaPubliceringsdatum'),
-            'skapad': message.get('skapadTid'),
+            'sista_publiceringsdatum': _isodate(message.get('sistaPubliceringsdatum')),
+            'skapad': _isodate(message.get('skapadTid')),
             'skapad_av': message.get('skapadAv'),
-            'uppdaterad': message.get('uppdateradTid'),
+            'uppdaterad': _isodate(message.get('uppdateradTid')),
             'uppdaterad_av': message.get('uppdateradAv'),
             'anvandarId': message.get('anvandarId'),
         }

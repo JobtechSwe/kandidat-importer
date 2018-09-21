@@ -11,27 +11,22 @@ platsannons_mappings = {
     "mappings": {
         "document": {
             "properties": {
-                "publicerinsdatum": {
-                    "type": "date",
-                    "format": "strict_date"
+                "publiceringsdatum": {
+                    "type": "date"
                 },
                 "sista_ansokningsdatum": {
-                    "type": "date",
-                    "format": "strict_date"
+                    "type": "date"
                 },
                 "status": {
                     "properties": {
                         "sista_publiceringsdatum": {
-                            "type": "date",
-                            "format": "strict_date"
+                            "type": "date"
                         },
                         "skapad": {
-                            "type": "date",
-                            "format": "basic_date_time"
+                            "type": "date"
                         },
                         "uppdaterad": {
-                            "type": "date",
-                            "format": "basic_date_time"
+                            "type": "date"
                         },
                     }
                 }
@@ -46,7 +41,7 @@ PG_PORT = os.getenv("PG_PORT", 5432)
 PG_DBNAME = os.getenv("PG_DBNAME")
 PG_USER = os.getenv("PG_USER")
 PG_PASSWORD = os.getenv("PG_PASSWORD")
-PG_BATCH_SIZE = os.getenv("PG_BATCH_SIZE", 50)
+PG_BATCH_SIZE = os.getenv("PG_BATCH_SIZE", 1000)
 
 # For kandidat import
 ES_KANDIDAT_INDEX = os.getenv('ES_KANDIDAT_INDEX', 'kandidater')
