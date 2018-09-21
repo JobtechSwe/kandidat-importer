@@ -36,7 +36,17 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
     return (jobterms, jobgroups, jobfields)
 
 
-def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions):
+def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
+                          taxonomy_countries):
+    countries = {
+        field['CountryID']:
+        OrderedDict([('id', str(field['CountryID'])),
+                     ('type', settings.taxonomy_type['landkod']),
+                     ('label', field['Term']),
+                     ('num_id', int(field['CountryID'])),
+                     ('country_code', field['CountryCode'])])
+        for field in taxonomy_countries
+    }
     regions = {
         field['NationalNUTSLevel3Code']: OrderedDict(
             [('id', str(field['NationalNUTSLevel3Code'])),
@@ -54,7 +64,7 @@ def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions):
              ('num_id', int(field['NationalNUTSLAU2Code']))])
         for field in taxonomy_municipalities
     }
-    return (municipalities, regions)
+    return (municipalities, regions, countries)
 
 
 def create_valuestore_skills(taxonomy_skills):
@@ -91,15 +101,12 @@ def create_valuestore_languages(taxonomy_languages):
     return (languages)
 
 
-def create_valuestore_countries(taxonomy_counries):
-    pass
-
-
 def fetch_full_taxonomy():
     try:
         taxonomy_jobfields = taxonomy.get_all_job_fields()
         taxonomy_jobgroups = taxonomy.get_all_job_groups()
         taxonomy_jobterms = taxonomy.get_all_job_terms()
+        taxonomy_countries = taxonomy.get_all_countries()
         taxonomy_regions = taxonomy.get_all_regions()
         taxonomy_municipalities = taxonomy.get_all_municipalities()
         taxonomy_languages = taxonomy.get_all_languages()
@@ -111,8 +118,9 @@ def fetch_full_taxonomy():
     (valuestore_jobterm,
      valuestore_jobgroup, valuestore_jobfield) = create_valuestore_jobs(
          taxonomy_jobterms, taxonomy_jobgroups, taxonomy_jobfields)
-    (valuestore_municipalities, valuestore_regions) = create_valuestore_geo(
-        taxonomy_municipalities, taxonomy_regions)
+    (valuestore_municipalities, valuestore_regions, valuestore_countries)\
+        = create_valuestore_geo(
+        taxonomy_municipalities, taxonomy_regions, taxonomy_countries)
     valuestore_languages = create_valuestore_languages(taxonomy_languages)
     valuestore_work_time_extent = create_valuestore_work_time_extent(
         taxonomy_work_time_extent)
@@ -121,7 +129,8 @@ def fetch_full_taxonomy():
         list(valuestore_jobterm.values()) + list(
             valuestore_jobgroup.values()) + list(valuestore_jobfield.values())
         + list(valuestore_municipalities.values()) + list(
-            valuestore_regions.values()) + list(valuestore_languages.values())
+            valuestore_regions.values()) + list(valuestore_countries.values())
+        + list(valuestore_languages.values())
         + list(valuestore_work_time_extent.values()) + list(
             valuestore_skills.values()))
 
