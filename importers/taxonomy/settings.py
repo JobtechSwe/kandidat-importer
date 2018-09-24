@@ -35,3 +35,76 @@ taxonomy_type = {
     EDUCATION_LEVEL: 'education_level',
     COUNTRY: 'country_code'
 }
+
+TAXONOMY_INDEX_CONFIGURATION = {
+    "mappings": {
+        "document": {
+            "properties": {
+                "description": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "id": {
+                    "type": "keyword"
+                },
+                "label": {
+                    "type": "text",
+                    "fields": {
+                        "autocomplete": {
+                            "type": "text",
+                            "analyzer": "ngram",
+                            "search_analyzer": "simple"
+                        }
+                    }
+                },
+                "parent_id": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "type": {
+                    "type": "keyword"
+                },
+                "num_id": {
+                    "type": "long"
+                }
+            }
+        }
+    },
+    "settings": {
+        "index": {
+            "number_of_shards": "5",
+            "number_of_replicas": "0"
+        },
+        "analysis": {
+            "analyzer": {
+                "ngram": {
+                    "filter": [
+                        "lowercase"
+                    ],
+                    "tokenizer": "ngram_tokenizer"
+                }
+            },
+            "tokenizer": {
+                "ngram_tokenizer": {
+                    "token_chars": [
+                        "letter",
+                        "digit"
+                    ],
+                    "min_gram": "1",
+                    "type": "edgeNGram",
+                    "max_gram": "10"
+                }
+            }
+        }
+    }
+}
