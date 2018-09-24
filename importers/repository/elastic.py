@@ -103,7 +103,7 @@ def create_index(indexname, extra_mappings=None):
 
 
 def add_indices_to_alias(indexlist, aliasname):
-    response = es.indices.update_alias(body={
+    response = es.indices.update_aliases(body={
         "actions": [
             {"add": {"indices": indexlist, "alias": aliasname}}
         ]
@@ -114,11 +114,10 @@ def add_indices_to_alias(indexlist, aliasname):
 def update_alias(indexname, old_indexlist, aliasname):
     actions = {
         "actions": [
-            {"add": {"index": indexname, "alias": aliasname}}
-
         ]
     }
     for index in old_indexlist:
         actions["actions"].append({"remove": {"index": index,
                                               "alias": aliasname}})
+        actions["actions"].append({"add": {"index": indexname, "alias": aliasname}})
     es.indices.update_aliases(body=actions)

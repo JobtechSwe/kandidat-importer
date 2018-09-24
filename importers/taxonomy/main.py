@@ -154,31 +154,33 @@ def check_if_taxonomyversion_already_exists():
     return (expected_index_name, index_exists)
 
 
-def update_search_engine_valuestore(indexname, indexexist, values):
+def update_search_engine_valuestore(indexname, indexexists, values):
+    # Create and/or update valuestore index
     try:
         elastic.create_index(indexname)
         elastic.bulk_index(values, indexname, ['type', 'id'])
     except Exception as e:
         log.error('Failed to load values into search engine', e)
         raise
-
-    if not indexexist:
-        try:
-            if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
-                alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
+    # Create and/or assign index to taxonomy alias and
+    # assign old index to archive alias
+    try:
+        if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
+            alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
+            elastic.update_alias( 
+                indexname, list(alias.keys()), settings.ES_TAX_INDEX_ALIAS)
+            if (not indexexists):
                 if (elastic.alias_exists(settings.ES_TAX_ARCHIVE_ALIAS)):
-                    elastic.add_indices_to_alias(
-                        list(alias.keys(), settings.ES_TAX_ARCHIVE_ALIAS))
+                    elastic.add_indices_to_alias(list(alias.keys()), 
+                                                 settings.ES_TAX_ARCHIVE_ALIAS)
                 else:
                     elastic.put_alias(
                         list(alias.keys()), settings.ES_TAX_ARCHIVE_ALIAS)
-                    elastic.update_alias(indexname, list(alias.keys()),
-                                         settings.ES_TAX_INDEX_ALIAS)
-            else:
-                elastic.put_alias([indexname], settings.ES_TAX_INDEX_ALIAS)
-        except Exception as e:
-            log.error('Failed to update aliases', e)
-            raise
+        else:
+            elastic.put_alias([indexname], settings.ES_TAX_INDEX_ALIAS)
+    except Exception as e:
+        log.error('Failed to update aliases', e)
+        raise
 
 
 def start():

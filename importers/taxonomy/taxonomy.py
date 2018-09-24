@@ -6,7 +6,8 @@ from importers.taxonomy import settings
 transport = Transport(timeout=2000, operation_timeout=5000)
 wsdl = settings.TAXONOMY_SERVICE_URL + "?WSDL"
 client = Client(wsdl=wsdl, transport=transport)
-#This step is necessary to handle incorrectly specified service url in the open api.
+# This step is necessary to handle incorrectly
+# specified service url in the open api.
 service = client.create_service("{urn:ams.se:Taxonomy}TaxonomiServiceSoap12",
                                 settings.TAXONOMY_SERVICE_URL)
 
