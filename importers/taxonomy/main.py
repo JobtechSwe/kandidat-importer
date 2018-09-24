@@ -14,7 +14,8 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
         field['LocaleFieldID']: OrderedDict(
             [('id', str(field['LocaleFieldID'])),
              ('type', settings.taxonomy_type['yrkesomrade']),
-             ('label', field['Term']), ('description', field['Description'])])
+             ('label', field['Term']), ('description', field['Description']),
+             ('num_id', int(field['LocaleFieldID']))])
         for field in taxonomy_jobfields
     }
     jobgroups = {
@@ -22,14 +23,16 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
             [('id', str(field['LocaleCode'])),
              ('type', settings.taxonomy_type['yrkesgrupp']),
              ('label', field['Term']), ('description', field['Description']),
+             ('num_id', int(field['LocaleCode'])),
              ('parent', jobfields[field['LocaleFieldID']])])
         for field in taxonomy_jobgroups
     }
     jobterms = {
         field['OccupationNameID']:
         OrderedDict([('id', str(field['OccupationNameID'])),
-                     ('type', settings.taxonomy_type['yrke']), ('label',
-                                                                field['Term']),
+                     ('type', settings.taxonomy_type['yrke']),
+                     ('label', field['Term']),
+                     ('num_id', int(field['LocaleCode'])),
                      ('parent', jobgroups[field['LocaleCode']])])
         for field in taxonomy_jobterms
     }
@@ -157,7 +160,7 @@ def check_if_taxonomyversion_already_exists():
 def update_search_engine_valuestore(indexname, indexexists, values):
     # Create and/or update valuestore index
     try:
-        elastic.create_index(indexname)
+        elastic.create_index(indexname, settings.TAXONOMY_INDEX_CONFIGURATION)
         elastic.bulk_index(values, indexname, ['type', 'id'])
     except Exception as e:
         log.error('Failed to load values into search engine', e)

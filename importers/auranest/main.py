@@ -11,12 +11,12 @@ log = logging.getLogger(__name__)
 
 def start():
     start_time = time.time()
-    if not elastic.index_exists(settings.ES_ANNONS_INDEX):
-        elastic.create_index(settings.ES_ANNONS_INDEX)
-    last_timestamp = elastic.get_last_timestamp(settings.ES_ANNONS_INDEX)
+    if not elastic.index_exists(settings.ES_AURANEST_INDEX):
+        elastic.create_index(settings.ES_AURANEST_INDEX)
+    last_timestamp = elastic.get_last_timestamp(settings.ES_AURANEST_INDEX)
     print("Last timestamp: %d" % last_timestamp)
     last_identifiers = elastic.get_ids_with_timestamp(last_timestamp,
-                                                      settings.ES_ANNONS_INDEX)
+                                                      settings.ES_AURANEST_INDEX)
     doc_counter = 0
 
     while True:
