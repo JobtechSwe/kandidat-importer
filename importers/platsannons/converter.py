@@ -10,6 +10,8 @@ log = logging.getLogger(__name__)
 
 
 def _isodate(bad_date):
+    if not bad_date:
+        return None
     try:
         date = parser.parse(bad_date)
         return date.isoformat()
@@ -201,6 +203,8 @@ def convert_message(message_envelope):
 
 
 def _expand_taxonomy_value(annons_key, message_key, message_dict):
+    if not message_dict:
+        return None
     message_value = message_dict.get(message_key, {}).get('varde')
     if message_value:
         return {
