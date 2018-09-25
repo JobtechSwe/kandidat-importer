@@ -18,8 +18,7 @@ def _isodate(bad_date):
         return None
 
 
-def convert_message(msg):
-    message_envelope = json.loads(msg) if isinstance(msg, str) else msg
+def convert_message(message_envelope):
     if 'annons' in message_envelope and 'version' in message_envelope:
         message = message_envelope['annons']
         annons = dict()
@@ -187,7 +186,7 @@ def convert_message(msg):
             'platsjournalen': message.get('publiceringskanalPlatsjournalen', False),
         }
         annons['status'] = {
-            'publicerad': (message.get('publicerad') == 'PUBLICERAD'),
+            'publicerad': (message.get('status') == 'PUBLICERAD' or message.get('status') == 'GODKAND_FOR_PUBLICERING'),
             'sista_publiceringsdatum': _isodate(message.get('sistaPubliceringsdatum')),
             'skapad': _isodate(message.get('skapadTid')),
             'skapad_av': message.get('skapadAv'),
