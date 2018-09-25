@@ -21,16 +21,16 @@ Importerar värdeförråd från Arbetsförmedlingens taxonomitjänst via SOAP. F
 in datan till. Datat ändras relativt sällan och scriptet bör inte köras mer ofta än dagligen för närvarande.
 Följande environmental variabler används:
 
-|Environment variable   | Default value  |
-|---|---|
-| ES_HOST  | localhost  |
-| ES_PORT  | 9200  |
-| ES_USER  |   |
-| ES_PWD  |   |
-| ES_TAX_INDEX_BASE  | taxonomy-  |
-| ES_TAX_INDEX_ALIAS  |  taxonomy |
-| ES_TAX_ARCHIVE_ALIAS  |  taxonomy-archive |
-| TAXONOMY_SERVICE_URL  | http://api.arbetsformedlingen.se/taxonomi/v0/TaxonomiService.asmx  |
+|Environment variable   | Default value  | Comment |
+|---|---|---|
+| ES_HOST  | localhost  | Elasticsearch host |
+| ES_PORT  | 9200  | Elasticsearch port |
+| ES_USER  |   | Elasticsearch username |
+| ES_PWD  |   | Elasticsearch password |
+| ES_TAX_INDEX_BASE  | taxonomy-  | Base string from which index for different taxonomyversions will be created |
+| ES_TAX_INDEX_ALIAS  |  taxonomy | Alias for index that is the current version of the taxonomy |
+| ES_TAX_ARCHIVE_ALIAS  |  taxonomy-archive | Alias collecting all older versions of the taxonomy |
+| TAXONOMY_SERVICE_URL  | http://api.arbetsformedlingen.se/taxonomi/v0/TaxonomiService.asmx  | URL for the taxonomy SOAP service |
 
 
 #### Användning
