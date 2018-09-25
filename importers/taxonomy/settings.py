@@ -29,11 +29,11 @@ taxonomy_type = {
     FIELD: 'jobfield',
     SKILL: 'skill',
     LANGUAGE: 'language',
-    MUNICIPALITY: 'municipality_code',
-    REGION: 'region_code',
+    MUNICIPALITY: 'municipality',
+    REGION: 'region',
     WORKTIME_EXTENT: 'worktime_extent',
     EDUCATION_LEVEL: 'education_level',
-    COUNTRY: 'country_code'
+    COUNTRY: 'country'
 }
 
 TAXONOMY_INDEX_CONFIGURATION = {
