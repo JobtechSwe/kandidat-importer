@@ -32,10 +32,7 @@ def convert_message(msg):
             'behov': message.get('beskrivningBehov'),
             'krav': message.get('beskrivningKrav'),
             'villkor': message.get('villkorsbeskrivning'),
-            'annonstext': "%s\n%s\n%s\n%s" % (message.get('ftgInfo', ''),
-                                              message.get('beskrivningBehov', ''),
-                                              message.get('beskrivningKrav', ''),
-                                              message.get('villkorsbeskrivning', ''))
+            'annonstext': message.get('annonstext'),
         }
         annons['arbetsplats_id'] = message.get('arbetsplatsId')
         annons['anstallningstyp'] = _expand_taxonomy_value('anstallningstyp',
