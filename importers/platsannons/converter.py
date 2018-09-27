@@ -1,4 +1,3 @@
-import json
 import logging
 from dateutil import parser
 from importers.repository import taxonomy
@@ -33,7 +32,7 @@ def convert_message(message_envelope):
             'behov': message.get('beskrivningBehov'),
             'krav': message.get('beskrivningKrav'),
             'villkor': message.get('villkorsbeskrivning'),
-            'annonstext': message.get('annonstext'),
+            'annonstext': message.get('annonstext')
         }
         annons['arbetsplats_id'] = message.get('arbetsplatsId')
         annons['anstallningstyp'] = _expand_taxonomy_value('anstallningstyp',
@@ -78,14 +77,15 @@ def convert_message(message_envelope):
             if yrkesroll and 'parent' in yrkesroll:
                 yrkesgrupp = yrkesroll.pop('parent')
                 yrkesomrade = yrkesgrupp.pop('parent')
-
                 annons['yrkesroll'] = {'kod': yrkesroll['id'],
                                        'term': yrkesroll['label']}
                 annons['yrkesgrupp'] = {'kod': yrkesgrupp['id'],
                                         'term': yrkesgrupp['label']}
                 annons['yrkesomrade'] = {'kod': yrkesomrade['id'],
                                          'term': yrkesomrade['label']}
-            else:
+            elif not yrkesroll:
+                log.error('Taxonomy value not found for "yrkesroll" (%s)' % message['yrkesroll'])
+            else: # yrkesroll is not None and 'parent' not in yrkesroll
                 log.error('Incomplete taxonomy tree for "yrkesroll" (%s)' % yrkesroll)
         arbplatsmessage = message.get('arbetsplatsadress', {})
         annons['arbetsplatsadress'] = {
@@ -137,7 +137,7 @@ def convert_message(message_envelope):
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) > 3
-            ],
+            ]
         }
         annons['meriterande'] = {
             'kompetenser': [
@@ -178,14 +178,14 @@ def convert_message(message_envelope):
                  }
                 for yrkerf in
                 message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) < 4
-            ],
+            ]
         }
         annons['publiceringsdatum'] = _isodate(message.get('publiceringsdatum'))
         annons['kalla'] = message.get('kalla')
         annons['publiceringskanaler'] = {
             'platsbanken': message.get('publiceringskanalPlatsbanken', False),
             'ais': message.get('publiceringskanalAis', False),
-            'platsjournalen': message.get('publiceringskanalPlatsjournalen', False),
+            'platsjournalen': message.get('publiceringskanalPlatsjournalen', False)
         }
         annons['status'] = {
             'publicerad': (message.get('status') == 'PUBLICERAD' or message.get('status') == 'GODKAND_FOR_PUBLICERING'),
@@ -194,7 +194,7 @@ def convert_message(message_envelope):
             'skapad_av': message.get('skapadAv'),
             'uppdaterad': _isodate(message.get('uppdateradTid')),
             'uppdaterad_av': message.get('uppdateradAv'),
-            'anvandarId': message.get('anvandarId'),
+            'anvandarId': message.get('anvandarId')
         }
         return annons
     else:

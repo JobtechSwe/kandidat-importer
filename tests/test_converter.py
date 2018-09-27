@@ -1,13 +1,13 @@
-import json, pytest, sys
+import pytest, sys, logging
 from importers.platsannons import converter
 from importers.repository import taxonomy
 
+log = logging.getLogger(__name__)
 
 @pytest.mark.parametrize("annons_key", ['anstallningstyp', '', None])
 @pytest.mark.parametrize("message_key", ('anstallningTyp','mkey', '', None) )
 @pytest.mark.parametrize("message_dict", [{"anstallningTyp": {"varde": "1"}}, {"anstallningTyp": {"varde": "2"}}
-                                          ,{'': {'varde': 'v2'}}, {'mkey': {'EJvarde': 'v1'}}
-                                          ,{}, None ] )
+                                          ,{'': {'varde': 'v2'}}, {'mkey': {'EJvarde': 'v1'}} ,{} ,None ] )
 def test_expand_taxonomy_value(annons_key, message_key, message_dict):
     print('============================', sys._getframe().f_code.co_name, '============================ ')
     d =  converter._expand_taxonomy_value(annons_key, message_key, message_dict)
@@ -74,10 +74,16 @@ def test_convert_message(msg): # see msg fixture in conftest.py
             assert annons['korkort_kravs'] is True
         else:
             assert annons['korkort_kravs'] is False
+        if 'yrkesroll' in message:
+            yrkesroll = taxonomy.get_entity('yrkesroll', message.get('yrkesroll', {}).get('varde'))
+            if yrkesroll and 'parent' in yrkesroll:
+                yrkesgrupp = yrkesroll.pop('parent')
+                yrkesomrade = yrkesgrupp.pop('parent')
+                assert annons['yrkesroll'] ==  {'kod': yrkesroll['id'],  'term': yrkesroll['label']}
+                assert annons['yrkesgrupp'] == {'kod': yrkesgrupp['id'], 'term': yrkesgrupp['label']}
+                assert annons['yrkesomrade'] =={'kod': yrkesomrade['id'],'term': yrkesomrade['label']}
 
-        #TODO add test for yrkesroll
         if message.get('arbetsplatsadress'):
-            print(annons['arbetsplatsadress'])
             arbplatsmessage = message.get('arbetsplatsadress')
             assert annons['arbetsplatsadress'] == {
                 'kommun': arbplatsmessage.get('kommun', {}).get('varde'),
@@ -91,14 +97,112 @@ def test_convert_message(msg): # see msg fixture in conftest.py
         else:
             assert annons['arbetsplatsadress'] == {'kommun': None, 'lan': None, 'gatuadress': None, 'postnummer': None,
                                                    'postort': None, 'latitud': None, 'longitud': None}
-            
+        assert annons['krav'] == {
+            'kompetenser': [
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
+                 }
+                for kompetens in
+                message.get('kompetenser', []) if kompetens.get('vikt', 0) > 3
+            ],
+            'sprak': [
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
+                 }
+                for sprak in message.get('sprak', []) if sprak.get('vikt', 0) > 3
+            ],
+            'utbildningsniva': [
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn.get('varde')),
+                 'vikt': utbn.get('vikt')
+                 }
+                for utbn in
+                [message.get('utbildningsniva', {})] if utbn.get('vikt', 0) > 3
+
+            ],
+            'utbildningsinriktning': [
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
+                 }
+                for utbi in
+                [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) > 3
+            ],
+            'yrkeserfarenheter': [
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
+                 }
+                for yrkerf in
+                message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) > 3
+            ]
+        }
+        assert annons['meriterande'] == {
+            'kompetenser': [
+                {'kod': kompetens.get('varde'),
+                 'term': taxonomy.get_term('kompetens', kompetens.get('varde')),
+                 'vikt': kompetens.get('vikt')
+                 }
+                for kompetens in
+                message.get('kompetenser', []) if kompetens.get('vikt', 0) < 4
+            ],
+            'sprak': [
+                {'kod': sprak.get('varde'),
+                 'term': taxonomy.get_term('sprak', sprak.get('varde')),
+                 'vikt': sprak.get('vikt')
+                 }
+                for sprak in message.get('sprak', []) if sprak.get('vikt', 0) < 4
+            ],
+            'utbildningsniva': [
+                {'kod': utbn.get('varde'),
+                 'term': taxonomy.get_term('utbildningsniva', utbn('varde')),
+                 'vikt': utbn('vikt')
+                 }
+                for utbn in
+                [message.get('utbildningsniva', {})] if utbn and utbn.get('vikt', 0) < 4 #TODO ask Markus about "and"
+            ],
+            'utbildningsinriktning': [
+                {'kod': utbi.get('varde'),
+                 'term': taxonomy.get_term('utbildningsinriktning', utbi.get('varde')),
+                 'vikt': utbi.get('vikt')
+                 }
+                for utbi in
+                [message.get('utbildningsinriktning', {})] if utbi.get('vikt', 0) < 4
+            ],
+            'yrkeserfarenheter': [
+                {'kod': yrkerf.get('varde'),
+                 'term': taxonomy.get_term('yrkesroll', yrkerf.get('varde')),
+                 'vikt': yrkerf.get('vikt')
+                 }
+                for yrkerf in
+                message.get('yrkeserfarenheter', []) if yrkerf.get('vikt', 0) < 4
+            ]
+        }
+        assert annons['publiceringsdatum'] == converter._isodate(message.get('publiceringsdatum'))
+        assert annons['kalla'] == message.get('kalla')
+        assert annons['publiceringskanaler'] == {
+            'platsbanken': message.get('publiceringskanalPlatsbanken', False),
+            'ais': message.get('publiceringskanalAis', False),
+            'platsjournalen': message.get('publiceringskanalPlatsjournalen', False),
+        }
+        assert annons['status'] == {
+            'publicerad': (message.get('status') == 'PUBLICERAD' or message.get('status') == 'GODKAND_FOR_PUBLICERING'),
+            'sista_publiceringsdatum': converter._isodate(message.get('sistaPubliceringsdatum')),
+            'skapad': converter._isodate(message.get('skapadTid')),
+            'skapad_av': message.get('skapadAv'),
+            'uppdaterad': converter._isodate(message.get('uppdateradTid')),
+            'uppdaterad_av': message.get('uppdateradAv'),
+            'anvandarId': message.get('anvandarId')
+        }
     else:
         print("Message is already in correct format")
         assert msg == annons
 
 
 @pytest.mark.parametrize("parsing_date", ['180924-00:00', '20180924T', 'mon sep 24', '00:00:00' ])
-@pytest.mark.parametrize("not_parsing_date", ['fdsasfd', '2099-13-32', '18-09-24:01:01', '', None])
+@pytest.mark.parametrize("not_parsing_date", ['20180101f', '2099-13-32', '18-09-24:01:01', '', None])
 def test_isodate(parsing_date, not_parsing_date):
     assert converter._isodate(not_parsing_date) is None
     assert converter._isodate(parsing_date) is not None
