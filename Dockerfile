@@ -16,6 +16,7 @@ RUN rm -fr /oracle_instant_client
 COPY . /app
 
 WORKDIR /app
+RUN python3 -m pip install -r requirements.txt
 RUN python3 setup.py install
 
 WORKDIR /
