@@ -84,9 +84,11 @@ def convert_message(message_envelope):
                 annons['yrkesomrade'] = {'kod': yrkesomrade['id'],
                                          'term': yrkesomrade['label']}
             elif not yrkesroll:
-                log.warning('Taxonomy value not found for "yrkesroll" (%s)' % message['yrkesroll'])
-            else: # yrkesroll is not None and 'parent' not in yrkesroll
-                log.error('Incomplete taxonomy tree for "yrkesroll" (%s)' % yrkesroll)
+                log.warning('Taxonomy value not found for "yrkesroll" (%s)'
+                            % message['yrkesroll'])
+            else:  # yrkesroll is not None and 'parent' not in yrkesroll
+                log.warning('Taxonomy value not found for "yrkesroll" (%s)'
+                            % message['yrkesroll'])
         arbplatsmessage = message.get('arbetsplatsadress', {})
         annons['arbetsplatsadress'] = {
             'kommun': arbplatsmessage.get('kommun', {}).get('varde'),
@@ -188,7 +190,8 @@ def convert_message(message_envelope):
             'platsjournalen': message.get('publiceringskanalPlatsjournalen', False)
         }
         annons['status'] = {
-            'publicerad': (message.get('status') == 'PUBLICERAD' or message.get('status') == 'GODKAND_FOR_PUBLICERING'),
+            'publicerad': (message.get('status') == 'PUBLICERAD'
+                           or message.get('status') == 'GODKAND_FOR_PUBLICERING'),
             'sista_publiceringsdatum': _isodate(message.get('sistaPubliceringsdatum')),
             'skapad': _isodate(message.get('skapadTid')),
             'skapad_av': message.get('skapadAv'),
@@ -203,9 +206,8 @@ def convert_message(message_envelope):
 
 
 def _expand_taxonomy_value(annons_key, message_key, message_dict):
-    if not message_dict:
-        return None
-    message_value = message_dict.get(message_key, {}).get('varde')
+    message_value = message_dict.get(message_key, {}).get('varde') \
+        if message_dict else None
     if message_value:
         return {
             'kod': message_value,
