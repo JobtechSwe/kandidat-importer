@@ -84,7 +84,7 @@ def convert_message(message_envelope):
                 annons['yrkesomrade'] = {'kod': yrkesomrade['id'],
                                          'term': yrkesomrade['label']}
             elif not yrkesroll:
-                log.error('Taxonomy value not found for "yrkesroll" (%s)' % message['yrkesroll'])
+                log.warning('Taxonomy value not found for "yrkesroll" (%s)' % message['yrkesroll'])
             else: # yrkesroll is not None and 'parent' not in yrkesroll
                 log.error('Incomplete taxonomy tree for "yrkesroll" (%s)' % yrkesroll)
         arbplatsmessage = message.get('arbetsplatsadress', {})
