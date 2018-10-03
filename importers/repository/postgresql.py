@@ -1,16 +1,25 @@
+import logging
 import sys
 import psycopg2
 from importers import settings
+
+log = logging.getLogger(__name__)
 
 if not settings.PG_DBNAME or not settings.PG_USER:
     print("You must set environment variables PG_DBNAME and PG_USER.")
     sys.exit(1)
 
-pg_conn = psycopg2.connect(host=settings.PG_HOST,
-                           port=settings.PG_PORT,
-                           dbname=settings.PG_DBNAME,
-                           user=settings.PG_USER,
-                           password=settings.PG_PASSWORD)
+try:
+    pg_conn = psycopg2.connect(host=settings.PG_HOST,
+                               port=settings.PG_PORT,
+                               dbname=settings.PG_DBNAME,
+                               user=settings.PG_USER,
+                               password=settings.PG_PASSWORD)
+except psycopg2.OperationalError as e:
+    log.error("Failed to connect to PostgreSQL on %s:%s" % (settings.PG_HOST,
+                                                            settings.PG_PORT))
+    log.debug("Reason for PostgreSQL failure: %s" % str(e))
+    sys.exit(1)
 
 
 def query(sql, args):
