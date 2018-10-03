@@ -11,6 +11,15 @@ platsannons_mappings = {
     "mappings": {
         "document": {
             "properties": {
+                "complete": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
                 "publiceringsdatum": {
                     "type": "date"
                 },
@@ -28,6 +37,14 @@ platsannons_mappings = {
                         "uppdaterad": {
                             "type": "date"
                         },
+                    }
+                },
+                "yrkesroll": {
+                    "properties": {
+                        "term": {
+                            "type": "text",
+                            "copy_to": "complete"
+                        }
                     }
                 }
             }
