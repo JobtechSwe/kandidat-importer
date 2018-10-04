@@ -23,6 +23,7 @@ COUNTRY = 'landkod'
 WORKTIME_EXTENT = 'arbetstidsomfattning'
 EDUCATION_LEVEL = 'utbildningsniva'
 EMPLOYMENT_TYPE = 'anstallningstyp'
+DRIVING_LICENCE = 'korkort'
 
 taxonomy_type = {
     OCCUPATION: 'jobterm',
@@ -35,7 +36,8 @@ taxonomy_type = {
     WORKTIME_EXTENT: 'worktime_extent',
     EDUCATION_LEVEL: 'education_level',
     COUNTRY: 'country',
-    EMPLOYMENT_TYPE: 'employment_type'
+    EMPLOYMENT_TYPE: 'employment_type',
+    DRIVING_LICENCE: 'driving_licence'
 }
 
 TAXONOMY_INDEX_CONFIGURATION = {

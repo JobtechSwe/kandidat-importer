@@ -116,6 +116,19 @@ def create_valuestore_employment_types(taxonomy_employmenttypes):
     return employment_types
 
 
+def create_valuestore_driving_licence(taxonomy_drivinglicence):
+    driving_licence = {
+        field['DrivingLicenceID']:
+        OrderedDict([('id', str(field['DrivingLicenceID'])),
+                     ('type', settings.taxonomy_type['korkort']),
+                     ('label', field['Term']),
+                     ('description', field['Description']),
+                     ('num_id', int(field['DrivingLicenceID']))])
+        for field in taxonomy_drivinglicence
+    }
+    return driving_licence
+
+
 def fetch_full_taxonomy():
     try:
         taxonomy_jobfields = taxonomy.get_all_job_fields()
@@ -128,6 +141,7 @@ def fetch_full_taxonomy():
         taxonomy_work_time_extent = taxonomy.get_all_work_time_extent()
         taxonomy_skills = taxonomy.get_all_skills()
         taxonomy_employmenttypes = taxonomy.get_all_employment_types()
+        taxonomy_drivinglicence = taxonomy.get_all_driving_licences()
     except Exception as e:
         log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
@@ -143,6 +157,8 @@ def fetch_full_taxonomy():
     valuestore_skills = create_valuestore_skills(taxonomy_skills)
     valuestore_employmenttypes = create_valuestore_employment_types(
         taxonomy_employmenttypes)
+    valuestore_drivinglicences = create_valuestore_driving_licence(
+        taxonomy_drivinglicence)
     return (
         list(valuestore_jobterm.values())
         + list(valuestore_jobgroup.values())
@@ -153,7 +169,9 @@ def fetch_full_taxonomy():
         + list(valuestore_languages.values())
         + list(valuestore_work_time_extent.values())
         + list(valuestore_skills.values())
-        + list(valuestore_employmenttypes.values()))
+        + list(valuestore_employmenttypes.values())
+        + list(valuestore_drivinglicences.values())
+    )
 
 
 def check_if_taxonomyversion_already_exists():

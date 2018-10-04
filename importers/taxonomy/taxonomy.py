@@ -64,7 +64,7 @@ def get_all_countries():
     return serialize_object(r)
 
 
-def get_all_drivers_licences():
+def get_all_driving_licences():
     r = service.GetAllDrivingLicences(settings.LANGUAGE_CODE_SE)
     return serialize_object(r)
 
@@ -91,3 +91,4 @@ def get_all_wage_type():
 def get_all_employment_types():
     r = service.GetAllEmploymentTypes(settings.LANGUAGE_CODE_SE)
     return serialize_object(r)
+
