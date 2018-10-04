@@ -69,6 +69,13 @@ def convert_message(message_envelope):
         annons['egen_bil'] = message.get('tillgangTillEgenBil', False)
         if message.get('korkort', []):
             annons['korkort_kravs'] = True
+            taxkorkort = []
+            for kkort in message.get('korkort'):
+                taxkorkort.append({
+                    "kod": kkort['varde'],
+                    "term": taxonomy.get_term('korkort', kkort['varde'])
+                })
+            annons['korkort'] = taxkorkort
         else:
             annons['korkort_kravs'] = False
         if 'yrkesroll' in message:
@@ -91,13 +98,16 @@ def convert_message(message_envelope):
                             % message['yrkesroll'])
         arbplatsmessage = message.get('arbetsplatsadress', {})
         annons['arbetsplatsadress'] = {
-            'kommun': arbplatsmessage.get('kommun', {}).get('varde'),
+            'kommunkod': arbplatsmessage.get('kommun', {}).get('varde'),
             'lan': arbplatsmessage.get('lan', {}).get('varde'),
             'gatuadress': arbplatsmessage.get('gatuadress'),
             'postnummer': arbplatsmessage.get('postnr'),
             'postort': arbplatsmessage.get('postort'),
             'latitud': arbplatsmessage.get('latitud'),
-            'longitud': arbplatsmessage.get('longitud')
+            'longitud': arbplatsmessage.get('longitud'),
+            'kommun': taxonomy.get_entity('kommun',
+                                          arbplatsmessage.get('kommun', {}).get('varde'),
+                                          {}).get('label')
         }
         annons['krav'] = {
             'kompetenser': [
@@ -183,7 +193,7 @@ def convert_message(message_envelope):
             ]
         }
         annons['publiceringsdatum'] = _isodate(message.get('publiceringsdatum'))
-        annons['kalla'] = message.get('kalla')
+        annons['kalla'] = message.get('kallaTyp')
         annons['publiceringskanaler'] = {
             'platsbanken': message.get('publiceringskanalPlatsbanken', False),
             'ais': message.get('publiceringskanalAis', False),

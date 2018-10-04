@@ -46,6 +46,13 @@ platsannons_mappings = {
                             "copy_to": "complete"
                         }
                     }
+                },
+                "arbetsplatsadress": {
+                    "properties": {
+                        "kommunkod": {
+                            "type": "text"
+                        }
+                    }
                 }
             }
         }
