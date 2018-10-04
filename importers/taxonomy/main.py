@@ -104,6 +104,18 @@ def create_valuestore_languages(taxonomy_languages):
     return (languages)
 
 
+def create_valuestore_employment_types(taxonomy_employmenttypes):
+    employment_types = {
+        field['EmploymentTypeID']:
+        OrderedDict([('id', str(field['EmploymentTypeID'])),
+                     ('type', settings.taxonomy_type['anstallningstyp']),
+                     ('label', field['Term']),
+                     ('num_id', int(field['EmploymentTypeID']))])
+        for field in taxonomy_employmenttypes
+    }
+    return employment_types
+
+
 def fetch_full_taxonomy():
     try:
         taxonomy_jobfields = taxonomy.get_all_job_fields()
@@ -115,6 +127,7 @@ def fetch_full_taxonomy():
         taxonomy_languages = taxonomy.get_all_languages()
         taxonomy_work_time_extent = taxonomy.get_all_work_time_extent()
         taxonomy_skills = taxonomy.get_all_skills()
+        taxonomy_employmenttypes = taxonomy.get_all_employment_types()
     except Exception as e:
         log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
@@ -128,14 +141,19 @@ def fetch_full_taxonomy():
     valuestore_work_time_extent = create_valuestore_work_time_extent(
         taxonomy_work_time_extent)
     valuestore_skills = create_valuestore_skills(taxonomy_skills)
+    valuestore_employmenttypes = create_valuestore_employment_types(
+        taxonomy_employmenttypes)
     return (
-        list(valuestore_jobterm.values()) + list(
-            valuestore_jobgroup.values()) + list(valuestore_jobfield.values())
-        + list(valuestore_municipalities.values()) + list(
-            valuestore_regions.values()) + list(valuestore_countries.values())
+        list(valuestore_jobterm.values())
+        + list(valuestore_jobgroup.values())
+        + list(valuestore_jobfield.values())
+        + list(valuestore_municipalities.values())
+        + list(valuestore_regions.values())
+        + list(valuestore_countries.values())
         + list(valuestore_languages.values())
-        + list(valuestore_work_time_extent.values()) + list(
-            valuestore_skills.values()))
+        + list(valuestore_work_time_extent.values())
+        + list(valuestore_skills.values())
+        + list(valuestore_employmenttypes.values()))
 
 
 def check_if_taxonomyversion_already_exists():

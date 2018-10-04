@@ -22,6 +22,7 @@ REGION = 'lanskod'
 COUNTRY = 'landkod'
 WORKTIME_EXTENT = 'arbetstidsomfattning'
 EDUCATION_LEVEL = 'utbildningsniva'
+EMPLOYMENT_TYPE = 'anstallningstyp'
 
 taxonomy_type = {
     OCCUPATION: 'jobterm',
@@ -33,7 +34,8 @@ taxonomy_type = {
     REGION: 'region',
     WORKTIME_EXTENT: 'worktime_extent',
     EDUCATION_LEVEL: 'education_level',
-    COUNTRY: 'country'
+    COUNTRY: 'country',
+    EMPLOYMENT_TYPE: 'employment_type'
 }
 
 TAXONOMY_INDEX_CONFIGURATION = {
