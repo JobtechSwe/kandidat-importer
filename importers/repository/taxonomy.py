@@ -17,7 +17,7 @@ taxtype_legend = {
     'land': 'country',
     'utbildningsinriktning': 'education',
     'utbildningsniva': 'education_level',
-    'korkort': 'drivers_license',
+    'korkort': 'driving_licence',
     'varaktighet': 'duration_type',
     'lonetyp': 'wage_type',
     'anstallningstyp': 'employment_type',

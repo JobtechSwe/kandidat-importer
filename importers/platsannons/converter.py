@@ -105,9 +105,9 @@ def convert_message(message_envelope):
             'postort': arbplatsmessage.get('postort'),
             'latitud': arbplatsmessage.get('latitud'),
             'longitud': arbplatsmessage.get('longitud'),
-            'kommun': taxonomy.get_entity('kommun',
-                                          arbplatsmessage.get('kommun', {}).get('varde'),
-                                          {}).get('label')
+            'kommun': taxonomy.get_entity(
+                'kommun', arbplatsmessage.get('kommun', {}).get('varde'), {}
+            ).get('label') if 'kommun' in arbplatsmessage else None
         }
         annons['krav'] = {
             'kompetenser': [
