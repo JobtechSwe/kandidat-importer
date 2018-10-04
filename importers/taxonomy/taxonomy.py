@@ -64,5 +64,30 @@ def get_all_countries():
     return serialize_object(r)
 
 
-def get_all_education_levels():
+def get_all_drivers_licences():
+    r = service.GetAllDrivingLicences(settings.LANGUAGE_CODE_SE)
+    return serialize_object(r)
+
+
+def get_all_education():
     pass
+
+
+def get_all_education_levels():
+    r = service.GetAllEducationLevels(settings.LANGUAGE_CODE_SE)
+    return serialize_object(r)
+
+
+def get_all_duration():
+    r = service.GetAllEmploymentDurations(settings.LANGUAGE_CODE_SE)
+    return serialize_object(r)
+
+
+def get_all_wage_type():
+    r = service.GetAllWageTypes(settings.LANGUAGE_CODE_SE)
+    return serialize_object(r)
+
+
+def get_all_employment_types():
+    r = service.GetAllEmploymentTypes(settings.LANGUAGE_CODE_SE)
+    return serialize_object(r)
