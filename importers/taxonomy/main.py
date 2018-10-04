@@ -1,10 +1,11 @@
 import logging
-from importers.taxonomy import settings, taxonomy
+from importers.taxonomy import settings, taxonomy_service
 from collections import OrderedDict
 from importers.repository import elastic
+from valuestore.taxonomy import tax_type
 
 logging.basicConfig()
-logging.getLogger(__name__).setLevel(logging.DEBUG)
+logging.getLogger(__name__).setLevel(logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -13,7 +14,7 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
     jobfields = {
         field['LocaleFieldID']: OrderedDict(
             [('id', str(field['LocaleFieldID'])),
-             ('type', settings.taxonomy_type['yrkesomrade']),
+             ('type', tax_type['yrkesomrade']),
              ('label', field['Term']), ('description', field['Description']),
              ('num_id', int(field['LocaleFieldID']))])
         for field in taxonomy_jobfields
@@ -21,7 +22,7 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
     jobgroups = {
         field['LocaleCode']: OrderedDict(
             [('id', str(field['LocaleCode'])),
-             ('type', settings.taxonomy_type['yrkesgrupp']),
+             ('type', tax_type['yrkesgrupp']),
              ('label', field['Term']), ('description', field['Description']),
              ('num_id', int(field['LocaleCode'])),
              ('parent', jobfields[field['LocaleFieldID']])])
@@ -30,7 +31,7 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
     jobterms = {
         field['OccupationNameID']:
         OrderedDict([('id', str(field['OccupationNameID'])),
-                     ('type', settings.taxonomy_type['yrke']),
+                     ('type', tax_type['yrkesroll']),
                      ('label', field['Term']),
                      ('num_id', int(field['LocaleCode'])),
                      ('parent', jobgroups[field['LocaleCode']])])
@@ -44,7 +45,7 @@ def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
     countries = {
         field['CountryID']:
         OrderedDict([('id', str(field['CountryID'])),
-                     ('type', settings.taxonomy_type['landkod']),
+                     ('type', tax_type['land']),
                      ('label', field['Term']),
                      ('num_id', int(field['CountryID'])),
                      ('country_code', field['CountryCode'])])
@@ -53,7 +54,7 @@ def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
     regions = {
         field['NationalNUTSLevel3Code']: OrderedDict(
             [('id', str(field['NationalNUTSLevel3Code'])),
-             ('type', settings.taxonomy_type['lanskod']),
+             ('type', tax_type['lan']),
              ('label', field['Term']), ('num_id',
                                         int(field['NationalNUTSLevel3Code']))])
         for field in taxonomy_regions
@@ -61,8 +62,7 @@ def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
     municipalities = {
         field['NationalNUTSLAU2Code']: OrderedDict(
             [('id', str(field['NationalNUTSLAU2Code'])),
-             ('type', settings.taxonomy_type['kommunkod']), ('label',
-                                                             field['Term']),
+             ('type', tax_type['kommun']), ('label', field['Term']),
              ('parent', regions[field['NationalNUTSLevel3Code']]),
              ('num_id', int(field['NationalNUTSLAU2Code']))])
         for field in taxonomy_municipalities
@@ -74,7 +74,7 @@ def create_valuestore_skills(taxonomy_skills):
     skills = {
         field['SkillID']:
         OrderedDict([('id', str(field['SkillID'])),
-                     ('type', settings.taxonomy_type['kompetens']),
+                     ('type', tax_type['kompetens']),
                      ('label', field['Term']), ('description', field['Term'])])
         for field in taxonomy_skills
     }
@@ -85,7 +85,7 @@ def create_valuestore_work_time_extent(taxonomy_work_time_extent):
     wte = {
         field['WorkTimeExtentID']:
         OrderedDict([('id', str(field['WorkTimeExtentID'])),
-                     ('type', settings.taxonomy_type['arbetstidsomfattning']),
+                     ('type', tax_type['arbetstidsomfattning']),
                      ('label', field['Term'])])
         for field in taxonomy_work_time_extent
     }
@@ -96,7 +96,7 @@ def create_valuestore_languages(taxonomy_languages):
     languages = {
         field['LanguageID']:
         OrderedDict([('id', str(field['LanguageID'])),
-                     ('type', settings.taxonomy_type['sprak']),
+                     ('type', tax_type['sprak']),
                      ('label', field['Term']), ('num_id',
                                                 int(field['LanguageID']))])
         for field in taxonomy_languages
@@ -108,7 +108,7 @@ def create_valuestore_employment_types(taxonomy_employmenttypes):
     employment_types = {
         field['EmploymentTypeID']:
         OrderedDict([('id', str(field['EmploymentTypeID'])),
-                     ('type', settings.taxonomy_type['anstallningstyp']),
+                     ('type', tax_type['anstallningstyp']),
                      ('label', field['Term']),
                      ('num_id', int(field['EmploymentTypeID']))])
         for field in taxonomy_employmenttypes
@@ -120,7 +120,7 @@ def create_valuestore_driving_licence(taxonomy_drivinglicence):
     driving_licence = {
         field['DrivingLicenceID']:
         OrderedDict([('id', str(field['DrivingLicenceID'])),
-                     ('type', settings.taxonomy_type['korkort']),
+                     ('type', tax_type['korkort']),
                      ('label', field['Term']),
                      ('description', field['Description']),
                      ('num_id', int(field['DrivingLicenceID']))])
@@ -131,17 +131,17 @@ def create_valuestore_driving_licence(taxonomy_drivinglicence):
 
 def fetch_full_taxonomy():
     try:
-        taxonomy_jobfields = taxonomy.get_all_job_fields()
-        taxonomy_jobgroups = taxonomy.get_all_job_groups()
-        taxonomy_jobterms = taxonomy.get_all_job_terms()
-        taxonomy_countries = taxonomy.get_all_countries()
-        taxonomy_regions = taxonomy.get_all_regions()
-        taxonomy_municipalities = taxonomy.get_all_municipalities()
-        taxonomy_languages = taxonomy.get_all_languages()
-        taxonomy_work_time_extent = taxonomy.get_all_work_time_extent()
-        taxonomy_skills = taxonomy.get_all_skills()
-        taxonomy_employmenttypes = taxonomy.get_all_employment_types()
-        taxonomy_drivinglicence = taxonomy.get_all_driving_licences()
+        taxonomy_jobfields = taxonomy_service.get_all_job_fields()
+        taxonomy_jobgroups = taxonomy_service.get_all_job_groups()
+        taxonomy_jobterms = taxonomy_service.get_all_job_terms()
+        taxonomy_countries = taxonomy_service.get_all_countries()
+        taxonomy_regions = taxonomy_service.get_all_regions()
+        taxonomy_municipalities = taxonomy_service.get_all_municipalities()
+        taxonomy_languages = taxonomy_service.get_all_languages()
+        taxonomy_work_time_extent = taxonomy_service.get_all_work_time_extent()
+        taxonomy_skills = taxonomy_service.get_all_skills()
+        taxonomy_employmenttypes = taxonomy_service.get_all_employment_types()
+        taxonomy_drivinglicence = taxonomy_service.get_all_driving_licences()
     except Exception as e:
         log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
@@ -176,7 +176,7 @@ def fetch_full_taxonomy():
 
 def check_if_taxonomyversion_already_exists():
     try:
-        tax_versions = taxonomy.get_taxonomy_version()
+        tax_versions = taxonomy_service.get_taxonomy_version()
     except Exception as e:
         log.error('Failed to get taxonomy version from taxonomy service', e)
         raise

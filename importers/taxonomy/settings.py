@@ -11,35 +11,6 @@ ES_TAX_INDEX_BASE = os.getenv("ES_TAX_INDEX_BASE", "taxonomy-")
 ES_TAX_INDEX_ALIAS = os.getenv("ES_TAX_INDEX_ALIAS", "taxonomy")
 ES_TAX_ARCHIVE_ALIAS = os.getenv("ES_TAX_ARCHIVE_ALIAS", "taxonomy-archive")
 
-# Query parameters
-OCCUPATION = 'yrke'
-GROUP = 'yrkesgrupp'
-FIELD = 'yrkesomrade'
-SKILL = 'kompetens'
-LANGUAGE = 'sprak'
-MUNICIPALITY = 'kommunkod'
-REGION = 'lanskod'
-COUNTRY = 'landkod'
-WORKTIME_EXTENT = 'arbetstidsomfattning'
-EDUCATION_LEVEL = 'utbildningsniva'
-EMPLOYMENT_TYPE = 'anstallningstyp'
-DRIVING_LICENCE = 'korkort'
-
-taxonomy_type = {
-    OCCUPATION: 'jobterm',
-    GROUP: 'jobgroup',
-    FIELD: 'jobfield',
-    SKILL: 'skill',
-    LANGUAGE: 'language',
-    MUNICIPALITY: 'municipality',
-    REGION: 'region',
-    WORKTIME_EXTENT: 'worktime_extent',
-    EDUCATION_LEVEL: 'education_level',
-    COUNTRY: 'country',
-    EMPLOYMENT_TYPE: 'employment_type',
-    DRIVING_LICENCE: 'driving_licence'
-}
-
 TAXONOMY_INDEX_CONFIGURATION = {
     "mappings": {
         "document": {

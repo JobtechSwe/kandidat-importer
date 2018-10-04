@@ -8,7 +8,7 @@ setup(
               'importers.kandidat', 'importers.taxonomy', 'importers.auranest'],
     include_package_data=True,
     install_requires=[
-        'psycopg2-binary', 'elasticsearch', 'zeep', 'cx_Oracle', 'python-dateutil'
+        'valuestore', 'psycopg2-binary', 'elasticsearch', 'zeep', 'cx_Oracle', 'python-dateutil'
     ],
     entry_points={
         'console_scripts': [
