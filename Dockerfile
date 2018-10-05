@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
 
 RUN apt-get update -y \
-  && apt-get install -y python3.7 python3-dev python3-setuptools apt-utils \
-  && apt-get install -y postgresql-client libxml2-dev libxslt-dev \
+  && apt-get install -y python3.7 python3-dev python3-setuptools python3-pip apt-utils \
+  && apt-get install -y postgresql-client libxml2-dev libxslt-dev git \
   && apt-get install -y alien libaio1 && apt-get clean
 
 COPY ./oracle_instant_client /oracle_instant_client
