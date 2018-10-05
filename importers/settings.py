@@ -20,6 +20,15 @@ platsannons_mappings = {
                         }
                     }
                 },
+                "keywords": {
+                    "type": "text",
+                    "fields": {
+                        "raw": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
                 "publiceringsdatum": {
                     "type": "date"
                 },
@@ -39,18 +48,20 @@ platsannons_mappings = {
                         },
                     }
                 },
-                "yrkesroll": {
-                    "properties": {
-                        "term": {
-                            "type": "text",
-                            "copy_to": "complete"
-                        }
-                    }
-                },
                 "arbetsplatsadress": {
                     "properties": {
                         "kommunkod": {
                             "type": "text"
+                        }
+                    }
+                },
+                "arbetsomfattning": {
+                    "properties": {
+                        "min": {
+                            "type": "float"
+                        },
+                        "max": {
+                            "type": "float"
                         }
                     }
                 }

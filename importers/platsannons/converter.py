@@ -1,4 +1,5 @@
 import logging
+import re
 from dateutil import parser
 from importers.repository import taxonomy
 
@@ -43,9 +44,11 @@ def convert_message(message_envelope):
                                                        'varaktighetTyp', message)
         annons['arbetstidstyp'] = _expand_taxonomy_value('arbetstidstyp',
                                                          'arbetstidTyp', message)
+        # If arbetstidstyp == 1 (heltid) then default omfattning == 100%
+        default_omf = 100 if message.get('arbetstidTyp', {}).get('varde') == "1" else None
         annons['arbetsomfattning'] = {
-            'min': message.get('arbetstidOmfattningFran'),
-            'max': message.get('arbetstidOmfattningTill')
+            'min': message.get('arbetstidOmfattningFran', default_omf),
+            'max': message.get('arbetstidOmfattningTill', default_omf)
         }
         annons['tilltrade'] = message.get('tilltrade')
         annons['arbetsgivare'] = {
@@ -209,7 +212,8 @@ def convert_message(message_envelope):
             'uppdaterad_av': message.get('uppdateradAv'),
             'anvandarId': message.get('anvandarId')
         }
-        return annons
+        # Extract labels as keywords for easier searching
+        return _add_keywords(annons)
     else:
         # Message is already in correct format
         return message_envelope
@@ -224,3 +228,48 @@ def _expand_taxonomy_value(annons_key, message_key, message_dict):
             'term': taxonomy.get_term(annons_key, message_value)
         }
     return None
+
+
+def _add_keywords(annons):
+    annons['keywords'] = []
+    for key in [
+        'yrkesroll.term',
+        'yrkesgrupp.term',
+        'yrkesomrade.term',
+        'krav.kompetenser.term',
+        'krav.sprak.term',
+        'meriterande.kompetenser.term',
+        'meriterande.sprak.term',
+    ]:
+        values = _get_nested_value(key, annons)
+        for value in values:
+            annons['keywords'] += _extract_taxonomy_label(value)
+    return annons
+
+
+def _get_nested_value(path, data):
+    keypath = path.split('.')
+    values = []
+    for i in range(len(keypath)):
+        element = data.get(keypath[i])
+        if isinstance(element, str):
+            values.append(element)
+            break
+        if isinstance(element, list):
+            for item in element:
+                values.append(item.get(keypath[i+1]))
+            break
+        if isinstance(element, dict):
+            data = element
+
+    return values
+
+
+def _extract_taxonomy_label(label):
+    if not label:
+        return []
+    label = label.replace('m.fl.', '').strip()
+    if '-' in label:
+        return [word.lower() for word in re.split(r'/', label)]
+    else:
+        return [word.lower().strip() for word in re.split(r'/|, | och ', label)]
