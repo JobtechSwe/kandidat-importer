@@ -231,7 +231,7 @@ def _expand_taxonomy_value(annons_key, message_key, message_dict):
 
 
 def _add_keywords(annons):
-    annons['keywords'] = []
+    keywords = set()
     for key in [
         'yrkesroll.term',
         'yrkesgrupp.term',
@@ -243,7 +243,9 @@ def _add_keywords(annons):
     ]:
         values = _get_nested_value(key, annons)
         for value in values:
-            annons['keywords'] += _extract_taxonomy_label(value)
+            for kw in _extract_taxonomy_label(value):
+                keywords.add(kw)
+    annons['keywords'] = list(keywords)
     return annons
 
 
