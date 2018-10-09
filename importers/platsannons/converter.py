@@ -100,17 +100,34 @@ def convert_message(message_envelope):
                 log.warning('Taxonomy value not found for "yrkesroll" (%s)'
                             % message['yrkesroll'])
         arbplatsmessage = message.get('arbetsplatsadress', {})
+        kommun = None
+        lansnamn = None
+        kommunkod = None
+        lanskod = None
+        land = None
+        landskod = None
+        if 'kommun' in arbplatsmessage:
+            kommunkod = arbplatsmessage.get('kommun', {}).get('varde', {})
+            kommun = taxonomy.get_term('kommun', kommunkod)
+        if 'lan' in arbplatsmessage:
+            lanskod = arbplatsmessage.get('lan', {}).get('varde', {})
+            lansnamn = taxonomy.get_term('lan', lanskod)
+        if 'land' in arbplatsmessage:
+            landskod = arbplatsmessage.get('land', {}).get('varde', {})
+            land = taxonomy.get_term('land', landskod)
+
         annons['arbetsplatsadress'] = {
-            'kommunkod': arbplatsmessage.get('kommun', {}).get('varde'),
-            'lan': arbplatsmessage.get('lan', {}).get('varde'),
-            'gatuadress': arbplatsmessage.get('gatuadress'),
-            'postnummer': arbplatsmessage.get('postnr'),
-            'postort': arbplatsmessage.get('postort'),
+            'kommunkod': kommunkod,
+            'lanskod': lanskod,
+            'kommun': kommun,
+            'lan': lansnamn,
+            'landskod': landskod,
+            'land': land,
+            'gatuadress': message.get('besoksadress', {}).get('gatuadress'),
+            'postnummer': message.get('postadress', {}).get('postnr'),
+            'postort': message.get('postadress', {}).get('postort'),
             'latitud': arbplatsmessage.get('latitud'),
             'longitud': arbplatsmessage.get('longitud'),
-            'kommun': taxonomy.get_entity(
-                'kommun', arbplatsmessage.get('kommun', {}).get('varde'), {}
-            ).get('label') if 'kommun' in arbplatsmessage else None
         }
         annons['krav'] = {
             'kompetenser': [
@@ -240,6 +257,10 @@ def _add_keywords(annons):
         'krav.sprak.term',
         'meriterande.kompetenser.term',
         'meriterande.sprak.term',
+        'arbetsplatsadress.postort',
+        'arbetsplatsadress.kommun',
+        'arbetsplatsadress.lansnamn',
+        'arbetsplatsadress.land',
     ]:
         values = _get_nested_value(key, annons)
         for value in values:
