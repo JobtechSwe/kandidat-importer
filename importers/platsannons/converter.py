@@ -29,11 +29,11 @@ def convert_message(message_envelope):
         annons['sista_ansokningsdatum'] = _isodate(message.get('sistaAnsokningsdatum'))
         annons['antal_platser'] = message.get('antalPlatser')
         annons['beskrivning'] = {
+            'annonstext': message.get('annonstext'),
             'information': message.get('ftgInfo'),
             'behov': message.get('beskrivningBehov'),
             'krav': message.get('beskrivningKrav'),
             'villkor': message.get('villkorsbeskrivning'),
-            'annonstext': message.get('annonstext')
         }
         annons['arbetsplats_id'] = message.get('arbetsplatsId')
         annons['anstallningstyp'] = _expand_taxonomy_value('anstallningstyp',
