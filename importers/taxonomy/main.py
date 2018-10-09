@@ -1,8 +1,10 @@
 import logging
+import json
 from importers.taxonomy import settings, taxonomy_service
 from collections import OrderedDict
 from importers.repository import elastic
 from valuestore.taxonomy import tax_type
+from pkg_resources import resource_string
 
 logging.basicConfig()
 logging.getLogger(__name__).setLevel(logging.INFO)
@@ -40,7 +42,7 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
     return (jobterms, jobgroups, jobfields)
 
 
-def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
+def create_valuestore_geo(file_places, taxonomy_municipalities, taxonomy_regions,
                           taxonomy_countries):
     countries = {
         field['CountryID']:
@@ -67,7 +69,20 @@ def create_valuestore_geo(taxonomy_municipalities, taxonomy_regions,
              ('num_id', int(field['NationalNUTSLAU2Code']))])
         for field in taxonomy_municipalities
     }
-    return (municipalities, regions, countries)
+
+    places = {}
+    for place in file_places:
+        identifier = "%s-%s" % (place['kommunkod'], _slugify(place['label']))
+        municipality = municipalities[place['kommunkod']]
+        places[identifier] = dict({'id': identifier}, **place)
+        places[identifier]['parent'] = municipality
+
+    return (places, municipalities, regions, countries)
+
+
+def _slugify(string):
+    return string.lower().replace('å', 'a') \
+            .replace('ä', 'a').replace('ö', 'o').replace(' ', '_') if string else None
 
 
 def create_valuestore_skills(taxonomy_skills):
@@ -145,12 +160,18 @@ def fetch_full_taxonomy():
     except Exception as e:
         log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
+    # Load places
+    file_places = json.loads(resource_string('importers.taxonomy.resources',
+                                             'platser.json'))
     (valuestore_jobterm,
      valuestore_jobgroup, valuestore_jobfield) = create_valuestore_jobs(
          taxonomy_jobterms, taxonomy_jobgroups, taxonomy_jobfields)
-    (valuestore_municipalities, valuestore_regions, valuestore_countries)\
-        = create_valuestore_geo(
-        taxonomy_municipalities, taxonomy_regions, taxonomy_countries)
+    (valuestore_places, valuestore_municipalities,
+     valuestore_regions,
+     valuestore_countries) = create_valuestore_geo(file_places,
+                                                   taxonomy_municipalities,
+                                                   taxonomy_regions,
+                                                   taxonomy_countries)
     valuestore_languages = create_valuestore_languages(taxonomy_languages)
     valuestore_work_time_extent = create_valuestore_work_time_extent(
         taxonomy_work_time_extent)
@@ -163,6 +184,7 @@ def fetch_full_taxonomy():
         list(valuestore_jobterm.values())
         + list(valuestore_jobgroup.values())
         + list(valuestore_jobfield.values())
+        + list(valuestore_places.values())
         + list(valuestore_municipalities.values())
         + list(valuestore_regions.values())
         + list(valuestore_countries.values())
@@ -206,11 +228,11 @@ def update_search_engine_valuestore(indexname, indexexists, values):
     try:
         if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
             alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
-            elastic.update_alias( 
+            elastic.update_alias(
                 indexname, list(alias.keys()), settings.ES_TAX_INDEX_ALIAS)
             if (not indexexists):
                 if (elastic.alias_exists(settings.ES_TAX_ARCHIVE_ALIAS)):
-                    elastic.add_indices_to_alias(list(alias.keys()), 
+                    elastic.add_indices_to_alias(list(alias.keys()),
                                                  settings.ES_TAX_ARCHIVE_ALIAS)
                 else:
                     elastic.put_alias(
