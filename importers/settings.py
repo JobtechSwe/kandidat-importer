@@ -52,6 +52,10 @@ platsannons_mappings = {
                     "properties": {
                         "kommunkod": {
                             "type": "text"
+                        },
+                        "coordinates": {
+                            "type": "geo_point",
+                            "ignore_malformed": True
                         }
                     }
                 },

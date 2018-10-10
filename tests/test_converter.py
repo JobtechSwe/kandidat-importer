@@ -91,12 +91,16 @@ def test_convert_message(msg): # see msg fixture in conftest.py
                 'gatuadress': arbplatsmessage.get('gatuadress'),
                 'postnummer': arbplatsmessage.get('postnr'),
                 'postort': arbplatsmessage.get('postort'),
-                'latitud': arbplatsmessage.get('latitud'),
-                'longitud': arbplatsmessage.get('longitud')
+                'coordinates': [float(arbplatsmessage.get('longitud')),
+                                float(arbplatsmessage.get('latitud'))]
             }
         else:
-            assert annons['arbetsplatsadress'] == {'kommun': None, 'lan': None, 'gatuadress': None, 'postnummer': None,
-                                                   'postort': None, 'latitud': None, 'longitud': None}
+            assert annons['arbetsplatsadress'] == {'kommun': None,
+                                                   'lan': None,
+                                                   'gatuadress': None,
+                                                   'postnummer': None,
+                                                   'postort': None,
+                                                   'coordinates': None}
         assert annons['krav'] == {
             'kompetenser': [
                 {'kod': kompetens.get('varde'),

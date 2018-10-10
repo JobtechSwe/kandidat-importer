@@ -126,8 +126,7 @@ def convert_message(message_envelope):
             'gatuadress': message.get('besoksadress', {}).get('gatuadress'),
             'postnummer': message.get('postadress', {}).get('postnr'),
             'postort': message.get('postadress', {}).get('postort'),
-            'latitud': arbplatsmessage.get('latitud'),
-            'longitud': arbplatsmessage.get('longitud'),
+            'coordinates': [float(arbplatsmessage.longitud), float(arbplatsmessage.latitud)],
         }
         annons['krav'] = {
             'kompetenser': [
