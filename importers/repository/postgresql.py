@@ -1,3 +1,5 @@
+# from psycopg2cffi import compat
+# compat.register()
 import logging
 import sys
 import psycopg2

@@ -1,6 +1,6 @@
 import certifi
 from ssl import create_default_context
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import bulk, scan
 from elasticsearch import Elasticsearch
 from importers import settings
 
@@ -23,6 +23,22 @@ def _bulk_generator(documents, indexname, idkey, doctype='document'):
             '_id': doc_id,
             '_source': document
         }
+
+
+def load_terms(termtype):
+    dsl = {
+        "query": {
+            "bool": {
+                "must": [
+                    {"term": {"type.keyword": termtype.upper()}},
+                    {"term": {"term_misspelled": False}}
+                ]
+            }
+        }
+    }
+    results = scan(es, query=dsl, index='irisontology', doc_type='default')
+    terms = [result['_source']['term'] for result in results]
+    return terms
 
 
 def bulk_index(documents, indexname, idkey='id'):

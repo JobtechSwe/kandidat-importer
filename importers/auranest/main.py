@@ -1,6 +1,7 @@
 import time
 import logging
 from importers.repository import elastic, postgresql
+from importers.auranest import enhancer
 from importers import settings
 
 logging.basicConfig()
@@ -24,9 +25,11 @@ def start():
             postgresql.read_from_pg_since(last_identifiers,
                                           last_timestamp, 'auranest')
         doc_counter += len(annonser)
+        print("Read %d ads" % doc_counter)
         if annonser:
+            enhanced = enhancer.enrich(annonser)
             log.info("Indexed %d docs so far." % doc_counter)
-            elastic.bulk_index(annonser, settings.ES_AURANEST_INDEX)
+            elastic.bulk_index(enhanced, settings.ES_AURANEST_INDEX)
         else:
             break
 
