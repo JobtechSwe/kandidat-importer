@@ -162,7 +162,7 @@ def fetch_full_taxonomy():
         raise
     # Load places
     file_places = json.loads(resource_string('importers.taxonomy.resources',
-                                             'platser.json'))
+                                             'platser.json').decode('utf-8'))
     (valuestore_jobterm,
      valuestore_jobgroup, valuestore_jobfield) = create_valuestore_jobs(
          taxonomy_jobterms, taxonomy_jobgroups, taxonomy_jobfields)
