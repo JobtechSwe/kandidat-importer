@@ -88,3 +88,4 @@ ORACLE_SERVICE = os.getenv('ORACLE_SERVICE')
 
 # For auranest import
 ES_AURANEST_INDEX = os.getenv('ES_AURANEST_INDEX', 'auranest')
+ES_ONTOLOGY_INDEX = os.getenv('ES_ONTOLOGY_INDEX', 'ontology')

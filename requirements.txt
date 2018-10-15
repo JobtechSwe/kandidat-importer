@@ -6,3 +6,4 @@ python-dateutil
 pytest
 pytest-runner
 git+https://github.com/JobtechSwe/valuestore-module.git
+flashtext

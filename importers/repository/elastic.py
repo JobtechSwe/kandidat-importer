@@ -36,8 +36,8 @@ def load_terms(termtype):
             }
         }
     }
-    results = scan(es, query=dsl, index='irisontology', doc_type='default')
-    terms = [result['_source']['term'] for result in results]
+    results = scan(es, query=dsl, index=settings.ES_ONTOLOGY_INDEX, doc_type='default')
+    terms = [result['_source'] for result in results]
     return terms
 
 

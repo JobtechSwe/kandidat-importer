@@ -8,7 +8,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'valuestore', 'psycopg2-binary', 'elasticsearch', 'zeep', 'cx_Oracle',
-        'python-dateutil'
+        'python-dateutil', 'flashtext'
     ],
     package_data={'': ['**/platser.json']},
     entry_points={
