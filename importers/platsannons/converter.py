@@ -106,6 +106,8 @@ def convert_message(message_envelope):
         lanskod = None
         land = None
         landskod = None
+        longitud = None
+        latitud = None
         if 'kommun' in arbplatsmessage:
             kommunkod = arbplatsmessage.get('kommun', {}).get('varde', {})
             kommun = taxonomy.get_term('kommun', kommunkod)
@@ -115,6 +117,10 @@ def convert_message(message_envelope):
         if 'land' in arbplatsmessage:
             landskod = arbplatsmessage.get('land', {}).get('varde', {})
             land = taxonomy.get_term('land', landskod)
+        if 'longitud'in arbplatsmessage:
+            longitud = float(arbplatsmessage.get('longitud'))
+        if 'latitud' in arbplatsmessage:
+            latitud = float(arbplatsmessage.get('latitud'))
 
         annons['arbetsplatsadress'] = {
             'kommunkod': kommunkod,
@@ -126,7 +132,7 @@ def convert_message(message_envelope):
             'gatuadress': message.get('besoksadress', {}).get('gatuadress'),
             'postnummer': message.get('postadress', {}).get('postnr'),
             'postort': message.get('postadress', {}).get('postort'),
-            'coordinates': [float(arbplatsmessage.longitud), float(arbplatsmessage.latitud)],
+            'coordinates': [longitud, latitud],
         }
         annons['krav'] = {
             'kompetenser': [
