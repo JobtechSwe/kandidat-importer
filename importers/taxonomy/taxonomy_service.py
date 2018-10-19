@@ -60,13 +60,13 @@ def get_taxonomy_version():
 
 
 def get_all_countries():
-    r = service.GetAllCountries(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllCountries(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_driving_licences():
-    r = service.GetAllDrivingLicences(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllDrivingLicences(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_education_fields():
@@ -75,23 +75,23 @@ def get_all_education_fields():
 
 
 def get_all_education_levels():
-    r = service.GetAllEducationLevels(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllEducationLevels(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_duration():
-    r = service.GetAllEmploymentDurations(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllEmploymentDurations(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_wage_type():
-    r = service.GetAllWageTypes(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllWageTypes(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_employment_types():
-    r = service.GetAllEmploymentTypes(settings.LANGUAGE_CODE_SE)
-    return serialize_object(r)
+    result = service.GetAllEmploymentTypes(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_occupation_experience():
