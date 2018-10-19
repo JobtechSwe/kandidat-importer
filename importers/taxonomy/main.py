@@ -144,6 +144,68 @@ def create_valuestore_driving_licence(taxonomy_drivinglicence):
     return driving_licence
 
 
+def create_valuestore_wagetype(taxonomy_wagetype):
+    wage_type = {
+        field['WageTypeID']:
+        OrderedDict([('id', str(field['WageTypeID'])),
+                     ('type', tax_type['lonetyp']),
+                     ('label', field['Term']),
+                     ('num_id', int(field['WageTypeID']))])
+        for field in taxonomy_wagetype
+    }
+    return wage_type
+
+
+def create_valuestore_education_level(taxonomy_education_level):
+    education_level = {
+        field['EducationLevelID']:
+        OrderedDict([('id', str(field['EducationLevelID'])),
+                     ('type', tax_type['utbildningsniva']),
+                     ('label', field['Term']),
+                     ('num_id', int(field['EducationLevelID']))])
+        for field in taxonomy_education_level
+    }
+    return education_level
+
+
+def create_valuestore_education_field(taxonomy_education_field):
+    education_field = {
+        field['EducationFieldID']:
+        OrderedDict([('id', str(field['EducationFieldID'])),
+                     ('type', tax_type['utbildningsinriktning']),
+                     ('label', field['Term']),
+                     ('description', field['Description']),
+                     ('num_id', int(field['EducationFieldID']))])
+        for field in taxonomy_education_field
+    }
+    return education_field
+
+
+def create_valuestore_duration(taxonomy_duration):
+    duration = {
+        field['EmploymentDurationID']:
+        OrderedDict([('id', str(field['EmploymentDurationID'])),
+                     ('type', tax_type['varaktighet']),
+                     ('label', field['Term']),
+                     ('EURESCode', field['EURESCode']),
+                     ('num_id', int(field['EmploymentDurationID']))])
+        for field in taxonomy_duration
+    }
+    return duration
+
+
+def create_valuestore_occupation_experience(taxonomy_occupation_experience):
+    occupation_experience = {
+        field['OccupationExperienceYearID']:
+        OrderedDict([('id', str(field['OccupationExperienceYearID'])),
+                     ('type', tax_type['erfarenhetsniva']),
+                     ('label', field['ExperienceYearCandidate']),
+                     ('num_id', int(field['OccupationExperienceYearID']))])
+        for field in taxonomy_occupation_experience
+    }
+    return occupation_experience
+
+
 def fetch_full_taxonomy():
     try:
         taxonomy_jobfields = taxonomy_service.get_all_job_fields()
@@ -157,6 +219,11 @@ def fetch_full_taxonomy():
         taxonomy_skills = taxonomy_service.get_all_skills()
         taxonomy_employmenttypes = taxonomy_service.get_all_employment_types()
         taxonomy_drivinglicence = taxonomy_service.get_all_driving_licences()
+        taxonomy_wagetype = taxonomy_service.get_all_wage_type()
+        taxonomy_education_level = taxonomy_service.get_all_education_levels()
+        taxonomy_education_field = taxonomy_service.get_all_education_fields()
+        taxonomy_duration = taxonomy_service.get_all_duration()
+        taxonomy_occupation_experience = taxonomy_service.get_all_occupation_experience()
     except Exception as e:
         log.error('Failed to fetch valuesets from Taxonomy Service', e)
         raise
@@ -180,6 +247,11 @@ def fetch_full_taxonomy():
         taxonomy_employmenttypes)
     valuestore_drivinglicences = create_valuestore_driving_licence(
         taxonomy_drivinglicence)
+    valuestore_wagetype = create_valuestore_wagetype(taxonomy_wagetype)
+    valuestore_education_level = create_valuestore_education_level(taxonomy_education_level)
+    valuestore_education_field = create_valuestore_education_field(taxonomy_education_field)
+    valuestore_duration = create_valuestore_duration(taxonomy_duration)
+    valuestore_occupation_experience = create_valuestore_occupation_experience(taxonomy_occupation_experience)
     return (
         list(valuestore_jobterm.values())
         + list(valuestore_jobgroup.values())
@@ -193,6 +265,11 @@ def fetch_full_taxonomy():
         + list(valuestore_skills.values())
         + list(valuestore_employmenttypes.values())
         + list(valuestore_drivinglicences.values())
+        + list(valuestore_wagetype.values())
+        + list(valuestore_education_level.values())
+        + list(valuestore_education_field.values())
+        + list(valuestore_duration.values())
+        + list(valuestore_occupation_experience.values())
     )
 
 

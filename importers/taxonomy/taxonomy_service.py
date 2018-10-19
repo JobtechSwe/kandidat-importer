@@ -69,8 +69,9 @@ def get_all_driving_licences():
     return serialize_object(r)
 
 
-def get_all_education():
-    pass
+def get_all_education_fields():
+    result = service.GetAllEducationFields(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
 
 
 def get_all_education_levels():
@@ -92,3 +93,7 @@ def get_all_employment_types():
     r = service.GetAllEmploymentTypes(settings.LANGUAGE_CODE_SE)
     return serialize_object(r)
 
+
+def get_all_occupation_experience():
+    result = service.GetAllExperiencesYear(settings.LANGUAGE_CODE_SE)
+    return serialize_object(result)
