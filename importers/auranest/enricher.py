@@ -19,8 +19,10 @@ def enrich(annonser):
     for annons in annonser:
         text = annons.get('content', {}).get('text', '')
         kwords = keyword_processor.extract_keywords(text)
-        annons['skills'] = list(set([ont['term'] for ont in kwords if ont['type'] == 'KOMPETENS']))
-        annons['occupations'] = list(set([ont['term'] for ont in kwords if ont['type'] == 'YRKE']))
+        annons['skills'] = list(set([ont['concept'].lower()
+                                     for ont in kwords if ont['type'] == 'KOMPETENS']))
+        annons['occupations'] = list(set([ont['concept'].lower()
+                                     for ont in kwords if ont['type'] == 'YRKE']))
         results.append(annons)
 
     return results

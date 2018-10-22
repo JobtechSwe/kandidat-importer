@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 def start():
     start_time = time.time()
     if not elastic.index_exists(settings.ES_AURANEST_INDEX):
-        elastic.create_index(settings.ES_AURANEST_INDEX)
+        elastic.create_index(settings.ES_AURANEST_INDEX, settings.auranest_mappings)
     last_timestamp = elastic.get_last_timestamp(settings.ES_AURANEST_INDEX)
     print("Last timestamp: %d" % last_timestamp)
     last_identifiers = elastic.get_ids_with_timestamp(last_timestamp,

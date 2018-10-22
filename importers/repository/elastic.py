@@ -1,8 +1,12 @@
+import logging
 import certifi
 from ssl import create_default_context
 from elasticsearch.helpers import bulk, scan
 from elasticsearch import Elasticsearch
 from importers import settings
+
+
+log = logging.getLogger(__name__)
 
 if settings.ES_USER and settings.ES_PWD:
     context = create_default_context(cafile=certifi.where())
@@ -115,7 +119,9 @@ def create_index(indexname, extra_mappings=None):
         body = basic_body
 
     # Creates an index with mappings, ignoring if it already exists
-    es.indices.create(index=indexname, body=body, ignore=400)
+    result = es.indices.create(index=indexname, body=body, ignore=400)
+    if 'error' in result:
+        log.error("Error on create index: %s" % result)
 
 
 def add_indices_to_alias(indexlist, aliasname):

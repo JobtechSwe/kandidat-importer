@@ -74,6 +74,35 @@ platsannons_mappings = {
     }
 }
 
+auranest_mappings = {
+    "mappings": {
+        "document": {
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "group": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "keywords": {
+                    "type": "text",
+                    "fields": {
+                        "raw": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 # For postgres (platsannonser and auranest)
 PG_HOST = os.getenv("PG_HOST")
 PG_PORT = os.getenv("PG_PORT", 5432)
