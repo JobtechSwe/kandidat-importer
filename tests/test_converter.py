@@ -4,15 +4,16 @@ from importers.repository import taxonomy
 
 log = logging.getLogger(__name__)
 
-@pytest.mark.parametrize("annons_key", ['anstallningstyp', '', None])
-@pytest.mark.parametrize("message_key", ('anstallningTyp','mkey', '', None) )
+@pytest.mark.integration
+@pytest.mark.parametrize("annons_key", ['anstallningstyp', '', None, 'sprak'])
+@pytest.mark.parametrize("message_key", ['anstallningTyp','mkey', '', None, 'sprak'] )
 @pytest.mark.parametrize("message_dict", [{"anstallningTyp": {"varde": "1"}}, {"anstallningTyp": {"varde": "2"}}
-                                          ,{'': {'varde': 'v2'}}, {'mkey': {'EJvarde': 'v1'}} ,{} ,None ] )
+                                          ,{'': {'varde': 'v2'}}, {'mkey': {'EJvarde': 'v1'}} ,{} ,None, {"sprak": {"varde": "424"}} ] )
 def test_expand_taxonomy_value(annons_key, message_key, message_dict):
     print('============================', sys._getframe().f_code.co_name, '============================ ')
     d =  converter._expand_taxonomy_value(annons_key, message_key, message_dict)
     print(d)
-    if not message_dict:
+    if not message_dict: #message_dict is empty
         assert d is None
         return
     message_value = message_dict.get(message_key, {}).get('varde')
@@ -22,6 +23,7 @@ def test_expand_taxonomy_value(annons_key, message_key, message_dict):
     else:
         assert d is None
 
+@pytest.mark.integration
 def test_convert_message(msg): # see msg fixture in conftest.py
     print('============================', sys._getframe().f_code.co_name, '============================ ')
     print(msg)
@@ -86,7 +88,7 @@ def test_convert_message(msg): # see msg fixture in conftest.py
         if message.get('arbetsplatsadress'):
             arbplatsmessage = message.get('arbetsplatsadress')
             assert annons['arbetsplatsadress'] == {
-                'kommun': arbplatsmessage.get('kommun', {}).get('varde'),
+                'kommunkod': arbplatsmessage.get('kommun', {}).get('varde'),
                 'lan': arbplatsmessage.get('lan', {}).get('varde'),
                 'gatuadress': arbplatsmessage.get('gatuadress'),
                 'postnummer': arbplatsmessage.get('postnr'),
@@ -204,9 +206,12 @@ def test_convert_message(msg): # see msg fixture in conftest.py
         print("Message is already in correct format")
         assert msg == annons
 
-
+@pytest.mark.unit
 @pytest.mark.parametrize("parsing_date", ['180924-00:00', '20180924T', 'mon sep 24', '00:00:00' ])
-@pytest.mark.parametrize("not_parsing_date", ['20180101f', '2099-13-32', '18-09-24:01:01', '', None])
+@pytest.mark.parametrize("not_parsing_date", ['20180101f', '2099-13-32', '18-09-24:01:01', '', None, []])
 def test_isodate(parsing_date, not_parsing_date):
+    if not not_parsing_date:
+        assert converter._isodate(not_parsing_date) is None
+        return
     assert converter._isodate(not_parsing_date) is None
     assert converter._isodate(parsing_date) is not None
