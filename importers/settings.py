@@ -6,7 +6,7 @@ ES_USER = os.getenv("ES_USER")
 ES_PWD = os.getenv("ES_PWD")
 
 # For platsannonser
-ES_ANNONS_INDEX = os.getenv('ES_ANNONS_INDEX', 'platsannons')
+ES_ANNONS_INDEX = os.getenv('ES_ANNONS_INDEX', os.getenv('ES_ANNONS', 'platsannons'))
 platsannons_mappings = {
     "mappings": {
         "document": {
@@ -74,7 +74,37 @@ platsannons_mappings = {
     }
 }
 
+# For postgres (platsannonser and auranest)
+PG_HOST = os.getenv("PG_HOST")
+PG_PORT = os.getenv("PG_PORT", 5432)
+PG_DBNAME = os.getenv("PG_DBNAME")
+PG_USER = os.getenv("PG_USER")
+PG_PASSWORD = os.getenv("PG_PASSWORD")
+PG_BATCH_SIZE = os.getenv("PG_BATCH_SIZE", 1000)
+
+# For kandidat import
+ES_KANDIDAT_INDEX = os.getenv('ES_KANDIDAT_INDEX', os.getenv('ES_KANDIDAT', 'kandidater'))
+ORACLE_USER = os.getenv('ORACLE_USER')
+ORACLE_PASSWORD = os.getenv('ORACLE_PASSWORD')
+ORACLE_PORT = os.getenv('ORACLE_PORT', '1521')
+ORACLE_HOST = os.getenv('ORACLE_HOST')
+ORACLE_SERVICE = os.getenv('ORACLE_SERVICE')
+
+# For auranest import
+ES_AURANEST_INDEX = os.getenv('ES_AURANEST_INDEX', os.getenv('ES_AURANEST', 'auranest'))
+ES_ONTOLOGY_INDEX = os.getenv('ES_ONTOLOGY_INDEX', os.getenv('ES_ONTOLOGY', 'ontology'))
+
 auranest_mappings = {
+    "settings": {
+        "analysis": {
+            "normalizer": {
+                "lc_normalizer": {
+                    "type": "custom",
+                    "filter": ["lowercase"]
+                }
+            }
+        }
+    },
     "mappings": {
         "document": {
             "properties": {
@@ -89,36 +119,57 @@ auranest_mappings = {
                         }
                     }
                 },
+                "skills": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    },
+                    "copy_to": "keywords"
+                },
+                "occupations": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    },
+                    "copy_to": "keywords"
+                },
+                "location": {
+                    "type": "object",
+                    "properties": {
+                        "translations": {
+                            "type": "object",
+                            "properties": {
+                                "sv-SE": {
+                                    "type": "text",
+                                    "copy_to": "keywords",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword",
+                                            "ignore_above": 256
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "keywords": {
                     "type": "text",
                     "fields": {
                         "raw": {
                             "type": "keyword",
-                            "ignore_above": 256
+                            "normalizer": "lc_normalizer"
                         }
                     }
-                }
+                },
             }
         }
     }
 }
 
-# For postgres (platsannonser and auranest)
-PG_HOST = os.getenv("PG_HOST")
-PG_PORT = os.getenv("PG_PORT", 5432)
-PG_DBNAME = os.getenv("PG_DBNAME")
-PG_USER = os.getenv("PG_USER")
-PG_PASSWORD = os.getenv("PG_PASSWORD")
-PG_BATCH_SIZE = os.getenv("PG_BATCH_SIZE", 1000)
-
-# For kandidat import
-ES_KANDIDAT_INDEX = os.getenv('ES_KANDIDAT_INDEX', 'kandidater')
-ORACLE_USER = os.getenv('ORACLE_USER')
-ORACLE_PASSWORD = os.getenv('ORACLE_PASSWORD')
-ORACLE_PORT = os.getenv('ORACLE_PORT', '1521')
-ORACLE_HOST = os.getenv('ORACLE_HOST')
-ORACLE_SERVICE = os.getenv('ORACLE_SERVICE')
-
-# For auranest import
-ES_AURANEST_INDEX = os.getenv('ES_AURANEST_INDEX', 'auranest')
-ES_ONTOLOGY_INDEX = os.getenv('ES_ONTOLOGY_INDEX', 'ontology')

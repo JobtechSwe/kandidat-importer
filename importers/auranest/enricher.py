@@ -17,7 +17,10 @@ for t in elastic.load_terms('YRKE'):
 def enrich(annonser):
     results = []
     for annons in annonser:
-        text = annons.get('content', {}).get('text', '')
+        # Fetch information from title, header and content
+        text = "%s %s %s" % (annons.get('header', ''),
+                             annons.get('title', {}).get('freetext', ''),
+                             annons.get('content', {}).get('text', ''))
         kwords = keyword_processor.extract_keywords(text)
         annons['skills'] = list(set([ont['concept'].lower()
                                      for ont in kwords if ont['type'] == 'KOMPETENS']))
