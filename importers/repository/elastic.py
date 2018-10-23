@@ -19,7 +19,7 @@ else:
 
 def _bulk_generator(documents, indexname, idkey, doctype='document'):
     for document in documents:
-        doc_id = ('-').join([document[key] for key in idkey]) \
+        doc_id = '-'.join([document[key] for key in idkey]) \
                          if isinstance(idkey, list) else document[idkey]
         yield {
             '_index': indexname,
@@ -34,8 +34,7 @@ def load_terms(termtype):
         "query": {
             "bool": {
                 "must": [
-                    {"term": {"type.keyword": termtype.upper()}},
-                    {"term": {"term_misspelled": False}}
+                    {"term": {"type.keyword": termtype.upper()}}
                 ]
             }
         }
