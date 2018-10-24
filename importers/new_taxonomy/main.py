@@ -1,9 +1,7 @@
 import logging
 import json
-from importers.taxonomy import settings, taxonomy_service, converter
-from collections import OrderedDict
+from importers.new_taxonomy import settings, taxonomy_service, converter
 from importers.repository import elastic
-from valuestore.taxonomy import tax_type
 from pkg_resources import resource_string
 
 

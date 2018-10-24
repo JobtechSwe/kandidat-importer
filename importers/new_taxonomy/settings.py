@@ -7,9 +7,9 @@ LANGUAGE_CODE_SE = 502
 COUNTRY_CODE_SE = 199
 
 # Elasticsearch settings
-ES_TAX_INDEX_BASE = os.getenv("ES_TAX_INDEX_BASE", "taxonomy-")
-ES_TAX_INDEX_ALIAS = os.getenv("ES_TAX_INDEX_ALIAS", "taxonomy")
-ES_TAX_ARCHIVE_ALIAS = os.getenv("ES_TAX_ARCHIVE_ALIAS", "taxonomy-archive")
+ES_TAX_INDEX_BASE = os.getenv("ES_NEW_TAX_INDEX_BASE", "new-taxonomy-")
+ES_TAX_INDEX_ALIAS = os.getenv("ES_NEW_TAX_INDEX_ALIAS", "new-taxonomy")
+ES_TAX_ARCHIVE_ALIAS = os.getenv("ES_NEW_TAX_ARCHIVE_ALIAS", "new-taxonomy-archive")
 
 TAXONOMY_INDEX_CONFIGURATION = {
     "mappings": {

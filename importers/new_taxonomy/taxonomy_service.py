@@ -1,7 +1,7 @@
 from zeep import Client
 from zeep.transports import Transport
 from zeep.helpers import serialize_object
-from importers.taxonomy import settings
+from importers.new_taxonomy import settings
 
 transport = Transport(timeout=2000, operation_timeout=5000)
 wsdl = settings.TAXONOMY_SERVICE_URL + "?WSDL"
