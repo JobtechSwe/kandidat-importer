@@ -2,3 +2,5 @@
 .eggs
 build
 dist
+.idea/
+elastic-importer.iml
