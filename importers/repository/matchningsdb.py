@@ -2,6 +2,7 @@ import cx_Oracle
 from importers import settings
 from importers.repository import taxonomy
 from datetime import datetime
+from dateutil import parser
 import sys
 
 if not settings.ORACLE_USER or not settings.ORACLE_PASSWORD \
@@ -97,4 +98,6 @@ def _datetime_to_timestamp(utc_time):
 def _timestamp_to_datetime(timestamp):
     if isinstance(timestamp, datetime):
         return timestamp
+    if isinstance(timestamp, str):
+        return parser.parse(timestamp)
     return datetime.fromtimestamp(timestamp/1000).strftime('%Y-%m-%d %H:%M:%S')

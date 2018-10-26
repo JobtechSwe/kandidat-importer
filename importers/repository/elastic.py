@@ -1,5 +1,6 @@
 import logging
 import certifi
+import time
 from ssl import create_default_context
 from elasticsearch.helpers import bulk, scan
 from elasticsearch import Elasticsearch
@@ -79,7 +80,16 @@ def get_ids_with_timestamp(ts, indexname):
 
 
 def index_exists(indexname):
-    return es.indices.exists(index=[indexname])
+    es_available = False
+    while not es_available:
+        try:
+            result = es.indices.exists(index=[indexname])
+            es_available = True
+            return result
+        except Exception as e:
+            log.warning("Elasticsearch currently not available. Waiting ...")
+            log.debug("Connection failed: %s" % str(e))
+            time.sleep(1)
 
 
 def alias_exists(aliasname):

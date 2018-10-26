@@ -14,9 +14,10 @@ def start():
     if not elastic.index_exists(settings.ES_KANDIDAT_INDEX):
         log.info("Creating index")
         elastic.create_index(settings.ES_KANDIDAT_INDEX)
+
     start_time = time.time()
     last_timestamp = elastic.get_last_timestamp(settings.ES_KANDIDAT_INDEX)
-    log.info("Last timestamp: %d" % last_timestamp)
+    log.info("Last timestamp: %s" % last_timestamp)
     last_identifiers = elastic.get_ids_with_timestamp(last_timestamp,
                                                       settings.ES_KANDIDAT_INDEX)
     doc_counter = 0
