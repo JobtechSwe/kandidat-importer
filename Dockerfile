@@ -22,4 +22,7 @@ RUN python3 setup.py install
 WORKDIR /
 RUN rm -fr /app
 
+# show commit info
+RUN git log -1
+
 USER 10000
