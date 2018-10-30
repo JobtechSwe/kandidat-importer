@@ -3,6 +3,7 @@ import json
 from importers.new_taxonomy import settings, taxonomy_service, converter
 from importers.repository import elastic
 from pkg_resources import resource_string
+import pickle
 
 
 logging.basicConfig()
@@ -13,7 +14,7 @@ concept_id_counter = 100000001
 
 def fetch_full_taxonomy():
     try:
-        print("Printar concept_id_counter innan första användning:", concept_id_counter)
+        #print("Printar concept_id_counter innan första användning:", concept_id_counter)
         log.info("Fetchning taxonomy")
         taxonomy_jobfields = taxonomy_service.get_all_job_fields()
         taxonomy_jobfields = add_concept_id(taxonomy_jobfields)  # adding concept_id
@@ -108,7 +109,7 @@ def add_concept_id(value_category):
         #    print(k, v)
         concept_id_counter += 1
     #    print(value_category[i])
-    print("Printar concept_id_counter efter vardekategori:", concept_id_counter)
+    #print("Printar concept_id_counter efter vardekategori:", concept_id_counter)
     return value_category
 
 
@@ -165,10 +166,24 @@ def update_search_engine_valuestore(indexname, indexexists, values):
         raise
 
 
+def pickle_values(all_values):
+    with open("values.pickle", "wb") as fout:
+        pickle.dump(all_values, fout)
+
+
+def unpickle_values():
+    with open("values.pickle", "rb") as fin:
+        data = pickle.load(fin)
+        return data
+
+
 def start():
     (indexname, indexexist) = check_if_taxonomyversion_already_exists()
-    values = fetch_full_taxonomy()
-    print("Antal värden i values:", len(values))
+    all_values = fetch_full_taxonomy()
+    print("Antal värden i values:", len(all_values))
+    """
+    pickle_values(all_values)
+    values = unpickle_values()
     for value in values:
         try:
             value["concept_id_num"] != False
@@ -176,6 +191,7 @@ def start():
             print("Printar varde utan concetp_id_num:", value)
     update_search_engine_valuestore(indexname, indexexist, values)
     log.info("import-taxonomy finished")
+    """
 
 
 if __name__ == '__main__':
