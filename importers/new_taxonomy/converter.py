@@ -14,7 +14,10 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
         field['LocaleFieldID']: OrderedDict(
             [('id', str(field['LocaleFieldID'])),
              ('type', tax_type['yrkesomrade']),
-             ('label', field['Term']), ('description', field['Description']),
+             ('label', field['Term']),
+             ('concept_id_num', int(field['concept_id'])),
+             ('concept_id_str', str(field['concept_id'])),
+             ('description', field['Description']),
              ('num_id', int(field['LocaleFieldID']))])
         for field in taxonomy_jobfields
     }
@@ -22,7 +25,10 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
         field['LocaleCode']: OrderedDict(
             [('id', str(field['LocaleCode'])),
              ('type', tax_type['yrkesgrupp']),
-             ('label', field['Term']), ('description', field['Description']),
+             ('label', field['Term']),
+             ('concept_id_num', int(field['concept_id'])),
+             ('concept_id_str', str(field['concept_id'])),
+             ('description', field['Description']),
              ('num_id', int(field['LocaleCode'])),
              ('parent', jobfields[field['LocaleFieldID']])])
         for field in taxonomy_jobgroups
@@ -32,6 +38,8 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
         OrderedDict([('id', str(field['OccupationNameID'])),
                      ('type', tax_type['yrkesroll']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['LocaleCode'])),
                      ('parent', jobgroups[field['LocaleCode']])])
         for field in taxonomy_jobterms
@@ -46,6 +54,8 @@ def create_valuestore_geo(file_places, taxonomy_municipalities, taxonomy_regions
         OrderedDict([('id', str(field['CountryID'])),
                      ('type', tax_type['land']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['CountryID'])),
                      ('country_code', field['CountryCode'])])
         for field in taxonomy_countries
@@ -54,14 +64,19 @@ def create_valuestore_geo(file_places, taxonomy_municipalities, taxonomy_regions
         field['NationalNUTSLevel3Code']: OrderedDict(
             [('id', str(field['NationalNUTSLevel3Code'])),
              ('type', tax_type['lan']),
-             ('label', field['Term']), ('num_id',
-                                        int(field['NationalNUTSLevel3Code']))])
+             ('label', field['Term']),
+             ('concept_id_num', int(field['concept_id'])),
+             ('concept_id_str', str(field['concept_id'])),
+             ('num_id', int(field['NationalNUTSLevel3Code']))])
         for field in taxonomy_regions
     }
     municipalities = {
         field['NationalNUTSLAU2Code']: OrderedDict(
             [('id', str(field['NationalNUTSLAU2Code'])),
-             ('type', tax_type['kommun']), ('label', field['Term']),
+             ('type', tax_type['kommun']),
+             ('concept_id_num', int(field['concept_id'])),
+             ('concept_id_str', str(field['concept_id'])),
+             ('label', field['Term']),
              ('parent', regions[field['NationalNUTSLevel3Code']]),
              ('num_id', int(field['NationalNUTSLAU2Code']))])
         for field in taxonomy_municipalities
@@ -70,8 +85,13 @@ def create_valuestore_geo(file_places, taxonomy_municipalities, taxonomy_regions
     places = {}
     for place in file_places:
         identifier = "%s-%s" % (place['kommunkod'], _slugify(place['label']))
+        concept_id_num = int(place["concept_id"])
+        concept_id_str = str(place["concept_id"])
         municipality = municipalities[place['kommunkod']]
-        places[identifier] = dict({'id': identifier}, **place)
+        places[identifier] = dict({'id': identifier, 'concept_id_num': concept_id_num,
+                                  'concept_id_str': concept_id_str}, ** place
+                                  )
+        del places[identifier]['concept_id']
         places[identifier]['parent'] = municipality
 
     return (places, municipalities, regions, countries)
@@ -87,7 +107,10 @@ def create_valuestore_skills(taxonomy_skills):
         field['SkillID']:
         OrderedDict([('id', str(field['SkillID'])),
                      ('type', tax_type['kompetens']),
-                     ('label', field['Term']), ('description', field['Term'])])
+                     ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
+                     ('description', field['Term'])])
         for field in taxonomy_skills
     }
     return (skills)
@@ -98,7 +121,9 @@ def create_valuestore_work_time_extent(taxonomy_work_time_extent):
         field['WorkTimeExtentID']:
         OrderedDict([('id', str(field['WorkTimeExtentID'])),
                      ('type', tax_type['arbetstidsomfattning']),
-                     ('label', field['Term'])])
+                     ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id']))])
         for field in taxonomy_work_time_extent
     }
     return (wte)
@@ -109,8 +134,10 @@ def create_valuestore_languages(taxonomy_languages):
         field['LanguageID']:
         OrderedDict([('id', str(field['LanguageID'])),
                      ('type', tax_type['sprak']),
-                     ('label', field['Term']), ('num_id',
-                                                int(field['LanguageID']))])
+                     ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
+                     ('num_id', int(field['LanguageID']))])
         for field in taxonomy_languages
     }
     return (languages)
@@ -122,6 +149,8 @@ def create_valuestore_employment_types(taxonomy_employmenttypes):
         OrderedDict([('id', str(field['EmploymentTypeID'])),
                      ('type', tax_type['anstallningstyp']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['EmploymentTypeID']))])
         for field in taxonomy_employmenttypes
     }
@@ -134,6 +163,8 @@ def create_valuestore_driving_licence(taxonomy_drivinglicence):
         OrderedDict([('id', str(field['DrivingLicenceID'])),
                      ('type', tax_type['korkort']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('description', field['Description']),
                      ('num_id', int(field['DrivingLicenceID']))])
         for field in taxonomy_drivinglicence
@@ -147,6 +178,8 @@ def create_valuestore_wagetype(taxonomy_wagetype):
         OrderedDict([('id', str(field['WageTypeID'])),
                      ('type', tax_type['lonetyp']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['WageTypeID']))])
         for field in taxonomy_wagetype
     }
@@ -159,6 +192,8 @@ def create_valuestore_education_level(taxonomy_education_level):
         OrderedDict([('id', str(field['EducationLevelID'])),
                      ('type', tax_type['utbildningsniva']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['EducationLevelID']))])
         for field in taxonomy_education_level
     }
@@ -171,6 +206,8 @@ def create_valuestore_education_field(taxonomy_education_field):
         OrderedDict([('id', str(field['EducationFieldID'])),
                      ('type', tax_type['utbildningsinriktning']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('description', field['Description']),
                      ('num_id', int(field['EducationFieldID']))])
         for field in taxonomy_education_field
@@ -184,6 +221,8 @@ def create_valuestore_duration(taxonomy_duration):
         OrderedDict([('id', str(field['EmploymentDurationID'])),
                      ('type', tax_type['varaktighet']),
                      ('label', field['Term']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('EURESCode', field['EURESCode']),
                      ('num_id', int(field['EmploymentDurationID']))])
         for field in taxonomy_duration
@@ -197,6 +236,8 @@ def create_valuestore_occupation_experience(taxonomy_occupation_experience):
         OrderedDict([('id', str(field['OccupationExperienceYearID'])),
                      ('type', tax_type['erfarenhetsniva']),
                      ('label', field['ExperienceYearCandidate']),
+                     ('concept_id_num', int(field['concept_id'])),
+                     ('concept_id_str', str(field['concept_id'])),
                      ('num_id', int(field['OccupationExperienceYearID']))])
         for field in taxonomy_occupation_experience
     }
