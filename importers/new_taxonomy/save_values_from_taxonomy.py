@@ -3,7 +3,7 @@ import json
 from importers.new_taxonomy import settings, taxonomy_service, converter
 from pkg_resources import resource_string
 import pickle
-import json
+from importers.new_taxonomy import json_converter
 
 
 logging.basicConfig()
