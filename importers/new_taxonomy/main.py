@@ -2,7 +2,6 @@ import logging
 from importers.new_taxonomy import settings, taxonomy_service
 from importers.repository import elastic
 import pickle
-from importers.new_taxonomy import json_converter
 
 
 logging.basicConfig()

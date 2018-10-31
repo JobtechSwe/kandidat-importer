@@ -1,5 +1,4 @@
 import json
-from collections import defaultdict
 
 
 def concept_to_taxonomy(values):
