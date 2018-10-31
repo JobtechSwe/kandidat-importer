@@ -1,9 +1,9 @@
 import logging
 import json
 from importers.new_taxonomy import settings, taxonomy_service, converter
-from importers.repository import elastic
 from pkg_resources import resource_string
 import pickle
+import json
 
 
 logging.basicConfig()
@@ -14,7 +14,6 @@ concept_id_counter = 100000001
 
 def fetch_full_taxonomy():
     try:
-        #print("Printar concept_id_counter innan första användning:", concept_id_counter)
         log.info("Fetchning taxonomy")
         taxonomy_jobfields = taxonomy_service.get_all_job_fields()
         taxonomy_jobfields = add_concept_id(taxonomy_jobfields)  # adding concept_id
@@ -101,69 +100,10 @@ def fetch_full_taxonomy():
 
 def add_concept_id(value_category):
     global concept_id_counter
-    #print(type(value_category))
     for i in value_category:
-        #print("\n", i)
         i["concept_id"] = concept_id_counter
-        #for k, v in i.items():
-        #    print(k, v)
         concept_id_counter += 1
-    #    print(value_category[i])
-    #print("Printar concept_id_counter efter vardekategori:", concept_id_counter)
     return value_category
-
-
-def check_if_taxonomyversion_already_exists():
-    try:
-        tax_versions = taxonomy_service.get_taxonomy_version()
-    except Exception as e:
-        log.error('Failed to get taxonomy version from taxonomy service', e)
-        raise
-    highest_version = max([v['BastaxonomiId'] for v in tax_versions])
-    expected_index_name = settings.ES_TAX_INDEX_BASE + str(highest_version)
-    log.info(
-        'Expected index name based on taxonomy service version is {}'.format(
-            expected_index_name))
-    try:
-        index_exists = elastic.index_exists(expected_index_name)
-    except Exception as e:
-        log.error('Failed to check index existence on elastic', e)
-        raise
-    return (expected_index_name, index_exists)
-
-
-def update_search_engine_valuestore(indexname, indexexists, values):
-    # Create and/or update valuestore index
-    try:
-        log.info("creating index {} and loading taxonomy".format(indexname))
-        elastic.create_index(indexname, settings.TAXONOMY_INDEX_CONFIGURATION)
-        elastic.bulk_index(values, indexname, ['type', 'id'])
-    except Exception as e:
-        log.error('Failed to load values into search engine', e)
-        raise
-    # Create and/or assign index to taxonomy alias and
-    # assign old index to archive alias
-    try:
-        if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
-            log.info("updating alias {}".format(settings.ES_TAX_INDEX_ALIAS))
-            alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
-            elastic.update_alias(
-                indexname, list(alias.keys()), settings.ES_TAX_INDEX_ALIAS)
-            if (not indexexists):
-                if (elastic.alias_exists(settings.ES_TAX_ARCHIVE_ALIAS)):
-                    log.info("Adding index {} to archive alias {}".format(indexname, settings.ES_TAX_ARCHIVE_ALIAS))
-                    elastic.add_indices_to_alias(list(alias.keys()),
-                                                 settings.ES_TAX_ARCHIVE_ALIAS)
-                else:
-                    log.info("Creating {} alias and adding index {}".format(settings.ES_TAX_ARCHIVE_ALIAS))
-                    elastic.put_alias(
-                        list(alias.keys()), settings.ES_TAX_ARCHIVE_ALIAS)
-        else:
-            log.info("creating alias {} and inserting index {}".format(settings.ES_TAX_INDEX_ALIAS, indexname))
-            elastic.put_alias([indexname], settings.ES_TAX_INDEX_ALIAS)
-    except Exception as e:
-        log.error('Failed to update aliases', e)
-        raise
 
 
 def pickle_values(all_values):
@@ -171,27 +111,11 @@ def pickle_values(all_values):
         pickle.dump(all_values, fout)
 
 
-def unpickle_values():
-    with open("values.pickle", "rb") as fin:
-        data = pickle.load(fin)
-        return data
-
-
 def start():
-    (indexname, indexexist) = check_if_taxonomyversion_already_exists()
     all_values = fetch_full_taxonomy()
-    print("Antal värden i values:", len(all_values))
-    """
     pickle_values(all_values)
-    values = unpickle_values()
-    for value in values:
-        try:
-            value["concept_id_num"] != False
-        except KeyError:
-            print("Printar varde utan concetp_id_num:", value)
-    update_search_engine_valuestore(indexname, indexexist, values)
-    log.info("import-taxonomy finished")
-    """
+    json_converter.concept_to_taxonomy(all_values)
+    json_converter.taxonomy_to_concept(all_values)
 
 
 if __name__ == '__main__':
