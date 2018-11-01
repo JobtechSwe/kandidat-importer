@@ -9,7 +9,7 @@ from importers.new_taxonomy import json_converter
 logging.basicConfig()
 logging.getLogger(__name__).setLevel(logging.INFO)
 log = logging.getLogger(__name__)
-concept_id_counter = 100000001
+concept_id_counter = 0  # 100000001
 
 
 def fetch_full_taxonomy():
@@ -100,10 +100,19 @@ def fetch_full_taxonomy():
 
 def add_concept_id(value_category):
     global concept_id_counter
+    uuid_list = get_uuids()
     for i in value_category:
-        i["concept_id"] = concept_id_counter
+        i["uuid_id"] = uuid_list[concept_id_counter]
         concept_id_counter += 1
     return value_category
+
+
+def get_uuids():
+    with open("uuid.txt", "r") as fin:
+        data = fin.read()
+        data = data.replace('"', '')
+        uuid_list = data.split("\n")
+        return uuid_list
 
 
 def pickle_values(all_values):
@@ -113,6 +122,8 @@ def pickle_values(all_values):
 
 def start():
     all_values = fetch_full_taxonomy()
+    #print(len(all_values))
+    #print(concept_id_counter)
     pickle_values(all_values)
     json_converter.concept_to_taxonomy(all_values)
     json_converter.taxonomy_to_concept(all_values)
