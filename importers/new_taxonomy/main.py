@@ -39,7 +39,7 @@ def update_search_engine_valuestore(indexname, indexexists, values):
     try:
         log.info("creating index {} and loading taxonomy".format(indexname))
         elastic.create_index(indexname, settings.TAXONOMY_INDEX_CONFIGURATION)
-        elastic.bulk_index(values, indexname, ['type', 'legacy_id'])
+        elastic.bulk_index(values, indexname, ['type', 'concept_id'])
     except Exception as e:
         log.error('Failed to load values into search engine', e)
         raise
