@@ -71,7 +71,7 @@ def _convert_to_dict(ktuples):
     for ktuple in ktuples:
         kritkey = ktuple[2].lower()
         kritcategory = _kriterium_category(kritkey)
-        kritkey = 'yrke' if kritkey == 'yrkesroll' else kritkey
+        kritkey = 'yrkesroll' if kritkey == 'yrke' else kritkey
         kritnode = {"kod": ktuple[3], "term": taxonomy.get_term(kritkey, ktuple[3]),
                     "vikt": ktuple[4]}
         if ktuple[7]:

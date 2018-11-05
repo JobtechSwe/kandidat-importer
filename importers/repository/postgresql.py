@@ -16,7 +16,9 @@ try:
                                port=settings.PG_PORT,
                                dbname=settings.PG_DBNAME,
                                user=settings.PG_USER,
-                               password=settings.PG_PASSWORD)
+                               password=settings.PG_PASSWORD,
+                               sslmode='require')
+    log.debug("Postgresql DSN: %s" % pg_conn.get_dsn_parameters())
 except psycopg2.OperationalError as e:
     log.error("Failed to connect to PostgreSQL on %s:%s" % (settings.PG_HOST,
                                                             settings.PG_PORT))
