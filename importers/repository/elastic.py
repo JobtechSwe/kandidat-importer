@@ -21,8 +21,8 @@ else:
 def _bulk_generator(documents, indexname, idkey, doctype='document'):
     for document in documents:
         doc_id = document["concept_id"]
-        doc_id = '-'.join([document[key] for key in idkey]) \
-                        if isinstance(idkey, list) else document[idkey]
+        #doc_id = '-'.join([document[key] for key in idkey]) \
+                        #if isinstance(idkey, list) else document[idkey]
         #print(doc_id)
         yield {
             '_index': indexname,

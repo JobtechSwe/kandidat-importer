@@ -2,6 +2,7 @@ import logging
 from importers.new_taxonomy import settings, taxonomy_service
 from importers.repository import elastic
 import pickle
+import os
 
 
 logging.basicConfig()
@@ -29,7 +30,8 @@ def check_if_taxonomyversion_already_exists():
 
 
 def unpickle_values():
-    with open("values.pickle", "rb") as fin:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(dir_path+"/values.pickle", "rb") as fin:
         data = pickle.load(fin)
         return data
 
@@ -77,3 +79,4 @@ def start():
 
 if __name__ == '__main__':
     start()
+

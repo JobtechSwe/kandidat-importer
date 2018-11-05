@@ -4,6 +4,7 @@ from importers.new_taxonomy import settings, taxonomy_service, converter
 from pkg_resources import resource_string
 import pickle
 from importers.new_taxonomy import json_converter
+import os
 
 
 logging.basicConfig()
@@ -116,7 +117,8 @@ def get_uuids():
 
 
 def pickle_values(all_values):
-    with open("values.pickle", "wb") as fout:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(dir_path + "/values.pickle", "wb") as fout:
         pickle.dump(all_values, fout)
 
 

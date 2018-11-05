@@ -1,5 +1,5 @@
 import json
-
+import os
 
 def concept_to_taxonomy(values):
     json_dict = {}
@@ -10,7 +10,8 @@ def concept_to_taxonomy(values):
         json_dict[value["concept_id"]]["label"] = value["label"]
     #print(len(values))
     #print(len(json_dict))
-    with open("concept_to_taxonomy.json", "w") as fout:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(dir_path + "/concept_to_taxonomy.json", "w") as fout:
         json.dump(json_dict, fout,)
 
 
@@ -25,12 +26,14 @@ def taxonomy_to_concept(values):
         py_dict[value["type"]][value["legacy_id"]]["type"] = value["type"]
     #print(len(values))
     #print(len(py_dict))
-    with open("taxonomy_to_concept.json", "w") as fout:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(dir_path + "/taxonomy_to_concept.json", "w") as fout:
         json.dump(py_dict, fout)
 
 
 def unpickle_json(file_name):
-    with open(file_name, "r") as fin:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(dir_path + "/" + file_name, "r") as fin:
         data = json.load(fin)
         for k, v in data.items():
             print(k, v)
