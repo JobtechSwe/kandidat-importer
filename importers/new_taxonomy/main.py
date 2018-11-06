@@ -74,7 +74,7 @@ def start():
     (indexname, indexexist) = check_if_taxonomyversion_already_exists()
     values = unpickle_values()
     update_search_engine_valuestore(indexname, indexexist, values)
-    log.info("import-taxonomy finished")
+    log.info("import-taxonomy from pickles finished")
 
 
 if __name__ == '__main__':
