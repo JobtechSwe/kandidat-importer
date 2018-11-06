@@ -1,9 +1,7 @@
 import logging
 import json
 from importers.taxonomy import settings, taxonomy_service, converter
-from collections import OrderedDict
 from importers.repository import elastic
-from valuestore.taxonomy import tax_type
 from pkg_resources import resource_string
 
 
@@ -97,14 +95,15 @@ def check_if_taxonomyversion_already_exists():
     except Exception as e:
         log.error('Failed to check index existence on elastic', e)
         raise
-    return (expected_index_name, index_exists)
+    return expected_index_name, index_exists
 
 
 def update_search_engine_valuestore(indexname, indexexists, values):
     # Create and/or update valuestore index
     try:
-        log.info("creating index {} and loading taxonomy".format(indexname))
-        elastic.create_index(indexname, settings.TAXONOMY_INDEX_CONFIGURATION)
+        if not elastic.index_exists(indexname):
+            log.info("creating index {} and loading taxonomy".format(indexname))
+            elastic.create_index(indexname, settings.TAXONOMY_INDEX_CONFIGURATION)
         elastic.bulk_index(values, indexname, ['type', 'id'])
     except Exception as e:
         log.error('Failed to load values into search engine', e)
@@ -112,18 +111,20 @@ def update_search_engine_valuestore(indexname, indexexists, values):
     # Create and/or assign index to taxonomy alias and
     # assign old index to archive alias
     try:
-        if (elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS)):
+        if elastic.alias_exists(settings.ES_TAX_INDEX_ALIAS):
             log.info("updating alias {}".format(settings.ES_TAX_INDEX_ALIAS))
             alias = elastic.get_alias(settings.ES_TAX_INDEX_ALIAS)
             elastic.update_alias(
                 indexname, list(alias.keys()), settings.ES_TAX_INDEX_ALIAS)
-            if (not indexexists):
-                if (elastic.alias_exists(settings.ES_TAX_ARCHIVE_ALIAS)):
-                    log.info("Adding index {} to archive alias {}".format(indexname, settings.ES_TAX_ARCHIVE_ALIAS))
+            if not indexexists:
+                if elastic.alias_exists(settings.ES_TAX_ARCHIVE_ALIAS):
+                    log.info("Adding index {} to archive alias {}".format(indexname,
+                                                                          settings.ES_TAX_ARCHIVE_ALIAS))
                     elastic.add_indices_to_alias(list(alias.keys()),
                                                  settings.ES_TAX_ARCHIVE_ALIAS)
                 else:
-                    log.info("Creating {} alias and adding index {}".format(settings.ES_TAX_ARCHIVE_ALIAS))
+                    log.info("Creating {} alias and adding index {}".format(settings.ES_TAX_ARCHIVE_ALIAS,
+                                                                            alias.keys()))
                     elastic.put_alias(
                         list(alias.keys()), settings.ES_TAX_ARCHIVE_ALIAS)
         else:

@@ -21,13 +21,13 @@ o_con = cx_Oracle.connect(user=settings.ORACLE_USER,
 
 def load_kandidater_from_madb(last_ids, since):
     cur = o_con.cursor()
-    datetime = _timestamp_to_datetime(since)
+    dtime = _timestamp_to_datetime(since)
     if cur.execute("""
                    SELECT ID, TIMESTAMP, ANVANDARID, NAMN, STATUS
                    FROM MATCHNINGSPROFIL
                    WHERE STATUS = :status AND TIMESTAMP >= :timestamp
                    ORDER BY TIMESTAMP ASC FETCH NEXT 2000 ROWS ONLY""",
-                   timestamp=datetime, status='PUBLICERAD'):
+                   timestamp=dtime, status='PUBLICERAD'):
         mp_rows = cur.fetchall()
         mpids = [mp[0] for mp in mp_rows]
         kriterium = _load_profilkriterium(mpids)
@@ -84,8 +84,9 @@ def _convert_to_dict(ktuples):
 
 
 def _kriterium_category(kriterium):
-    return 'krav'if kriterium in ['yrkesroll', 'kommun', 'lan', 'land', 'anstallningstyp',
-                                  'arbetsomfattning'] else 'erfarenhet'
+    return 'krav' if kriterium in ['yrkesroll', 'kommun', 'lan', 'land',
+                                   'anstallningstyp',
+                                   'arbetsomfattning'] else 'erfarenhet'
 
 
 def _datetime_to_timestamp(utc_time):

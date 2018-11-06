@@ -32,11 +32,11 @@ def create_valuestore_jobs(taxonomy_jobterms, taxonomy_jobgroups,
         OrderedDict([('id', str(field['OccupationNameID'])),
                      ('type', tax_type['yrkesroll']),
                      ('label', field['Term']),
-                     ('num_id', int(field['LocaleCode'])),
+                     ('num_id', int(field['OccupationNameID'])),
                      ('parent', jobgroups[field['LocaleCode']])])
         for field in taxonomy_jobterms
     }
-    return (jobterms, jobgroups, jobfields)
+    return jobterms, jobgroups, jobfields
 
 
 def create_valuestore_geo(file_places, taxonomy_municipalities, taxonomy_regions,
