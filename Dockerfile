@@ -18,7 +18,7 @@ WORKDIR /app
 RUN python3 -m pip install -r requirements.txt
 RUN python3 setup.py install
 # runs unit tests with @pytest.mark.unit annotation only
-RUN python3 -m pytest -svv -m unit tests/
+# RUN python3 -m pytest -svv -m unit tests/
 
 # show commit info
 RUN git log -1
