@@ -20,12 +20,8 @@ else:
 
 def _bulk_generator(documents, indexname, idkey, doctype='document'):
     for document in documents:
-        if "concept_id" in document:
-            doc_id = document["concept_id"]
-        else:
-            doc_id = '-'.join([document[key] for key in idkey]) if isinstance(idkey, list) else document[idkey]
+        doc_id = '-'.join([document[key] for key in idkey]) if isinstance(idkey, list) else document[idkey]
 
-        print(doc_id)
         yield {
             '_index': indexname,
             '_type': doctype,
@@ -49,7 +45,7 @@ def load_terms(termtype):
     return terms
 
 
-def bulk_index(documents, indexname, idkey='concept_id'):
+def bulk_index(documents, indexname, idkey='id'):
     bulk(es, _bulk_generator(documents, indexname, idkey))
 
 

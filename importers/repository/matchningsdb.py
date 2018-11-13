@@ -23,7 +23,7 @@ def load_kandidater_from_madb(last_ids, since):
     cur = o_con.cursor()
     dtime = _timestamp_to_datetime(since)
     if cur.execute("""
-                   SELECT ID, TIMESTAMP, ANVANDARID, NAMN, STATUS
+                   SELECT ID, TIMESTAMP, ANVANDARID, NAMN, STATUS, REFERENSID
                    FROM MATCHNINGSPROFIL
                    WHERE STATUS = :status AND TIMESTAMP >= :timestamp
                    ORDER BY TIMESTAMP ASC FETCH NEXT 2000 ROWS ONLY""",
@@ -35,6 +35,7 @@ def load_kandidater_from_madb(last_ids, since):
                           "timestamp": _datetime_to_timestamp(mp[1]),
                           "anvandarid": mp[2],
                           "namn": mp[3],
+                          "referensid": mp[5],
                           "status": mp[4]}, **kriterium.get(mp[0], {}))
                     for mp in mp_rows if mp[0] not in last_ids]
         return (mpids,
