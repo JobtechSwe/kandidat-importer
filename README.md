@@ -35,19 +35,4 @@ Följande environmental variabler används:
 
 #### Användning
 
-    $ import-taxonomy
-    
-### import-kandidater
-TBD
-#### Användning
-TBD
-
-### import-platsannonser
-TBD
-#### Användning
-TBD
-
-### import-auranest
-TBD
-#### Användning
-TBD
+    $ import-kandidater
