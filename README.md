@@ -19,4 +19,3 @@ Script som är tänkta att köras med olika intervall, i regel via cron, för at
 #### Användning
 
     $ import-kandidater
-    
